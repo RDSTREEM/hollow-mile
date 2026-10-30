@@ -70,3 +70,26 @@ class World:
         self.curr = dest._id
 
         return dest
+
+    def connect(self, room_id: str, d: str, dest_id: str, bidir: bool = False) -> None:
+        room = self.get_room(room_id)
+        self.get_room(dest_id)
+
+        room.add_exit(d, dest_id)
+
+        if bidir:
+            op = {
+                "north": "south",
+                "south": "north",
+                "east": "west",
+                "west": "east",
+                "up": "down",
+                "down": "up",
+            }
+
+            _op = op.get(d)
+
+            if _op is None:
+                raise ValueError(f"Cant determin the opposite of {d}")
+
+            self.get_room(dest_id).add_exit(_op, room_id)
