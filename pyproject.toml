@@ -1,0 +1,20 @@
+[build-system]
+requires = ["setuptools >= 68"]
+build-backend = "setuptools.build_meta"
+
+[project]
+name = "hollow-mile"
+version = "0.1"
+description = "A reusable data driven interactive fiction engine"
+requires-python = ">=3.12"
+dependencies = ["textual >= 1.0.0", "PyYAML >= 6.0"]
+
+[project.scripts]
+hollow-mile = "main:main"
+
+[tool.setuptools]
+package-dir = {"" = "src"}
+py-modules = ["main"]
+
+[tools.setuptools.packages.find]
+where = ["src"]
