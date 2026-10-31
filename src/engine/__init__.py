@@ -4,6 +4,7 @@ from engine.world import World
 from engine.parser import Command, CommandParser
 from engine.result import Result
 from engine.actions import ActionRegistry, create_registry
+from engine.inventory import Inventory
 
 __all__ = [
     "Entity",
@@ -14,4 +15,5 @@ __all__ = [
     "Result",
     "ActionRegistry",
     "create_registry",
+    "Inventory",
 ]

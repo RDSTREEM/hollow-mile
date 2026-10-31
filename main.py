@@ -1,5 +1,5 @@
 from engine.loader import Loader
-from engine import CommandParser, Command, create_registry
+from engine import CommandParser, Command, create_registry, Inventory
 from engine.actions import look
 from pathlib import Path
 
@@ -10,6 +10,8 @@ def main():
     story = loader.load()
     world = story.world
     metadata = story.metadata
+
+    inv = Inventory()
 
     parser = CommandParser()
     actions = create_registry()
@@ -22,7 +24,7 @@ def main():
     print("\nType 'help' to see avialalbe commands.")
     print("Type 'quit' to leave the station.\n")
 
-    result = look(world, Command(action="look"))
+    result = look(world, inv, Command(action="look"))
 
     print(result.text)
 
@@ -43,7 +45,7 @@ def main():
         if command.action == "empty":
             continue
 
-        res = actions.execute(world, command)
+        res = actions.execute(world, inv, command)
 
         print(f"\n{res.text}")
 
