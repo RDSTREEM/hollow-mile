@@ -1,0 +1,32 @@
+rooms:
+  platform:
+    name: Platform
+    description: >
+      A deserted railway platform streches into darknes.. Fluroescnet lights flicker overhead, illuminating a yellow line that has almost faded away.
+
+      Your train stands behind you. Its dors are open, but the interior is completely dark.
+
+    exits:
+      north: ticket_hall
+
+  ticket_hall:
+    name: Ticket Hall
+    description: >
+      A narrow ticket hall covered in dust. Several ticket windows stand abandoned behind their glass partitions.
+
+      An old clock hangs above the entrance.
+      Its hands are frozen at 11:47.
+
+    exits:
+      south: platform
+      east: maintenance_office
+
+  maintenance_office:
+    name: Maintenance Office
+    description: >
+      A cramped office filled with forgotten railway equipment. A desk sits beneath a flickering lamp.
+
+      Someone has left a drawer slightly open.
+
+    exits:
+      west: ticket_hall

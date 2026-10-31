@@ -74,7 +74,7 @@ class Loader:
             if not isinstance(definition, dict):
                 raise ValueError(f"Invalid definition for room: {_id}")
 
-            name = definition.get(name)
+            name = definition.get("name")
             desc = definition.get("description", "")
 
             # ? Parsing hell like before muhahahahahahahahaha

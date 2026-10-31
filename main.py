@@ -1,75 +1,17 @@
-from engine import World, Room, Entity
-
-
-def demo() -> World:
-    world = World()
-
-    platform = Room(
-        _id="platform",
-        name="Platform",
-        desc=(
-            "A deserted railway platform streches into darkness."
-            "The lights flicker overhead."
-        ),
-    )
-
-    hall = Room(
-        _id="ticket_hall",
-        name="Ticket Hall",
-        desc=(
-            "A narrow ticket hall. Dust covers the counters."
-            "and an old clock hangs above the entrance"
-        ),
-    )
-
-    office = Room(
-        _id="maintenance_office",
-        name="Maintenance Office",
-        desc=("A cramped office filled with forgotten railway equipment"),
-    )
-
-    world.add_room(platform)
-    world.add_room(hall)
-    world.add_room(office)
-    for room in world.rooms:
-        print(room)
-
-    world.connect("platform", "north", "ticket_hall", True)
-
-    world.connect("ticket_hall", "east", "maintenance_office", True)
-
-    key = Entity(
-        _id="brass_key",
-        name="Brass key",
-        desc="A small brass key. Its handle bears the number 03.",
-        aliases=["key", "old key"],
-        portable=True,
-    )
-
-    board = Entity(
-        _id="noticeboard",
-        name="Noticeboard",
-        desc="A faded timetable is pined beneath a layer of dust.",
-        _type="object",
-        aliases=["board", "timetable"],
-    )
-
-    world.add_entity(key)
-    world.add_entity(board)
-
-    world.place_entity("brass_key", "platform")
-    world.place_entity("noticeboard", "ticket_hall")
-
-    world.set_curr("platform")
-
-    return world
+from engine.loader import Loader
+from pathlib import Path
 
 
 def main():
-    world = demo()
+    p = Path(__file__).parent / "stories" / "hollow_mile"
+    loader = Loader(p)
+    story = loader.load()
+    world = story.world
+    metadata = story.metadata
 
     print("=" * 50)
-    print("                    HOLLOW MILE")
+    print(f"                    {metadata["title"]}")
+    print(f"                {metadata.get("subtitle", "")}")
     print("=" * 50)
 
     print(f"\n Location: {world.curr_room.name}")
