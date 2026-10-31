@@ -12,7 +12,7 @@ class World:
     @property
     def curr_room(self):
         if self.curr is None:
-            return None
+            raise RuntimeError("Current room doesnt exist")
         return self.get_room(self.curr)
 
     def add_room(self, room: Room) -> None:
