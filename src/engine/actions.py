@@ -97,7 +97,7 @@ def go(world: World, command: Command) -> Result:
         return Result(text=str(e), success=False)
 
     return Result(
-        text=f"You travel {command.target}. \n\n {dest.name} {dest.desc}",
+        text=f"You travel {command.target}. \n\n{dest.name}\n{dest.desc}",
         suggestions=[f"Go {d}" for d in dest.exits],
         metadata={"location": dest._id},
     )

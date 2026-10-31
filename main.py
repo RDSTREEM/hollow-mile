@@ -49,7 +49,7 @@ def main():
 
         if res.suggestions:
             print("\nSuggested actions:")
-            for sug in result.suggestions:
+            for sug in res.suggestions:
                 print(f" - {sug}")
 
 
