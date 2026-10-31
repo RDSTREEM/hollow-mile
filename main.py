@@ -1,4 +1,6 @@
 from engine.loader import Loader
+from engine import CommandParser, Command, create_registry
+from engine.actions import look
 from pathlib import Path
 
 
@@ -9,30 +11,46 @@ def main():
     world = story.world
     metadata = story.metadata
 
-    print("=" * 50)
+    parser = CommandParser()
+    actions = create_registry()
+
+    print("=" * 60)
     print(f"                    {metadata["title"]}")
     print(f"                {metadata.get("subtitle", "")}")
-    print("=" * 50)
+    print("=" * 60)
 
-    print(f"\n Location: {world.curr_room.name}")
-    print(world.curr_room.desc)
+    print("\nType 'help' to see avialalbe commands.")
+    print("Type 'quit' to leave the station.\n")
 
-    print("\n Avialable exits: ")
+    result = look(world, Command(action="look"))
 
-    for d in world.curr_room.exits:
-        print(f" - {d}")
+    print(result.text)
 
-    print("\n Moving north...")
+    while True:
+        try:
+            user = input("\n>").strip()
+        except (KeyboardInterrupt, EOFError):
+            print("\n Leaving the station")
+            break
 
-    dest = world.move("north")
+        if user.lower() in {"quit", "exit"}:
+            print("\nYour train remains silent.")
+            print("HOLLOW MILE - SESSION ENDED")
+            break
 
-    print(f"\n Location: {dest.name}")
-    print(dest.desc)
+        command = parser.parse(user)
 
-    print("\n Entities in this room: ")
-    for entity in dest.entities:
-        e = world.get_entity(entity)
-        print(f"- {e.name}")
+        if command.action == "empty":
+            continue
+
+        res = actions.execute(world, command)
+
+        print(f"\n{res.text}")
+
+        if res.suggestions:
+            print("\nSuggested actions:")
+            for sug in result.suggestions:
+                print(f" - {sug}")
 
 
 if __name__ == "__main__":
