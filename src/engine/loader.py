@@ -64,11 +64,93 @@ class Loader:
 
         return Story(metadata=metadata, world=world)
 
-    def _load_rooms(self, room_data, world):
-        pass
+    def _load_rooms(self, room_data: dict, world: World):
+        rooms = room_data.get("rooms")
 
-    def _load_entities(self, item_data, world):
-        pass
+        if not isinstance(rooms, dict) or not rooms:
+            raise ValueError("rooms.yaml must contain a non-empty 'rooms' mapping")
 
-    def _connect(self, room_data, world):
-        pass
+        for _id, definition in rooms.items():
+            if not isinstance(definition, dict):
+                raise ValueError(f"Invalid definition for room: {_id}")
+
+            name = definition.get(name)
+            desc = definition.get("description", "")
+
+            # ? Parsing hell like before muhahahahahahahahaha
+
+            if not isinstance(name, str) or not name:
+                raise ValueError(f"Room {_id} must have a name")
+
+            if not isinstance(desc, str):
+                raise ValueError(f"Descriptions must be text, {_id}")
+
+            world.add_room(
+                Room(
+                    _id=_id,
+                    name=name,
+                    desc=desc.strip(),
+                ),
+            )
+
+    def _load_entities(self, item_data: dict, world: World):
+        items = item_data.get("items", {})
+
+        if not isinstance(items, dict):
+            raise ValueError("There has to be an items mapping in items.yaml")
+
+        for _id, definition in items.items():
+            if not isinstance(definition, dict):
+                raise ValueError(f"Invalid entity definition: {_id}")
+
+            name = definition.get("name")
+            desc = definition.get("description", "")
+            aliases = definition.get("aliases", [])
+            t = definition.get("entity_type", "item")
+            portable = definition.get("portable", False)
+            location = definition.get("location")
+
+            if not isinstance(name, str) or not name:
+                raise ValueError(f"Name for {_id} must be text")
+
+            if not isinstance(desc, str) or not name:
+                raise ValueError(f"Description for {_id} must be text")
+
+            if not isinstance(aliases, list) or not all(
+                isinstance(alias, str) for alias in aliases
+            ):
+                raise ValueError(f"Aliases for {_id} must be strings")
+
+            if not isinstance(t, str) or not t:
+                raise ValueError(f"Entity type for {_id} must be text")
+
+            if not isinstance(portable, bool):
+                raise ValueError(f"Portable for {_id} must be bool")
+
+            if not isinstance(location, str) or not location:
+                raise ValueError(f"Location for {_id} must be text")
+
+            entity = Entity(
+                _id,
+                name=name,
+                desc=desc,
+                _type=t,
+                aliases=aliases,
+                portable=portable,
+            )
+
+            world.add_entity(entity)
+            world.place_entity(_id, location)
+
+    def _connect(self, room_data: dict, world: World):
+        rooms = room_data["rooms"]
+
+        for _id, definition in rooms.items():
+            exits = definition.get("exits", {})
+
+            if not isinstance(exits, dict):
+                raise ValueError(f"Exits for {_id} must be a mapping")
+
+            for d, dest in exits.items():
+                if not isinstance(d, str) or not d:
+                    raise ValueError(f"Invalid destination for exit {d} room")
