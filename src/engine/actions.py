@@ -101,3 +101,42 @@ def go(world: World, command: Command) -> Result:
         suggestions=[f"Go {d}" for d in dest.exits],
         metadata={"location": dest._id},
     )
+
+
+def examine(world: World, command: Command) -> Result:
+    if not command.target:
+        return Result(text="What would you like to examine?", success=False)
+
+    entity, ambigous = find_entity(world, command.target)
+
+    if ambigous:
+        return Result(
+            text="That description matches multiple objects. Be more specific.",
+            success=False,
+        )
+
+    if entity is None:
+        return Result(text=f"You dont see {command.target} here", success=False)
+
+    return Result(text=f"{entity.name}\n\n{entity.desc}")
+
+
+def inventory(world: World, command: Command) -> Result:
+    return Result(
+        text="Your inventory is empty."
+    )  # for now, i would impolement taking and droping later
+
+
+def help_action(world: World, command: Command) -> Result:
+    return Result(
+        text=(
+            "AVIALABLE COMMANDS\n\n"
+            "look                              Describe your surroundings\n"
+            "go <direction>                    Move through an exit\n"
+            "north/south                       Quick movment\n"
+            "examine <object>                  Examine something\n"
+            "look at <object>                  Examine something\n"
+            "inventory                         Check your inventory\n"
+            "help                              Displays this help\n"
+        )
+    )
