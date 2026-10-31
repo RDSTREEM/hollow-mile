@@ -5,6 +5,7 @@ from dataclasses import dataclass
 class Command:
     action: str
     target: str | None = None
+    secondary_target: str | None = None
     raw: str = ""
 
 
@@ -20,6 +21,12 @@ class CommandParser:
         "invetory": "inventory",
         "inv": "inventory",
         "i": "inventory",
+        "take": "take",
+        "pick": "take",
+        "grab": "take",
+        "get": "take",
+        "drop": "drop",
+        "use": "use",
         "help": "help",
         "?": "help",
     }
@@ -49,9 +56,6 @@ class CommandParser:
                 raw=raw,
             )
 
-        if normalized.startswith("look at"):
-            return Command("look", raw=raw)
-
         action = self.ACTION_ALIASES.get(words[0])
 
         if action is None:
@@ -59,26 +63,42 @@ class CommandParser:
 
         remaining = words[1:]
 
-        while remaining and remaining[0] in self.ARTICLES:
-            remaining.pop(0)
+        if action == "use":
+            if "on" not in remaining:
+                return Command("unknown", target=normalized, raw=raw)
 
-        target = " ".join(remaining) or None
+            s = remaining.index("on")
 
-        if action == "look":
+            item = self._clean_target(" ".join(remaining[:s]))
+
+            target = self._clean_target(" ".join(remaining[s + 1 :]))
+
+            if not item or not target:
+                return Command("unknown", target=normalized, raw=raw)
+
+            return Command("use", target=item, secondary_target=target, raw=raw)
+
+        target = self._clean_target(" ".join(remaining))
+
+        # if action == "look":
+        # if target:
+        # return Command("examine", target=target, raw=raw)
+
+        if action in {"inventory", "help", "look"}:
+            return Command(action, target=target or None, raw=raw)
+
+        if action in {"take", "drop", "examine"}:
+            if action == "take" and target.startswith("up "):
+                target = self._clean_target(target[3:])
+
             if target:
-                return Command("examine", target=target, raw=raw)
+                return Command(action, target=target, raw=raw)
 
         if action == "go":
             if target and len(target.split()) == 1:
                 return Command("go", target=target, raw=raw)
 
             return Command("unknown", target=normalized, raw=raw)
-
-        if action == "examine" and not target:
-            return Command("unknown", target=normalized, raw=raw)
-
-        if action in {"inventory", "help"}:
-            return Command(action, raw=raw)
 
         return Command(action, target=target, raw=raw)
 
