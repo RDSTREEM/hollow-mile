@@ -180,13 +180,69 @@ def drop(world: World, inv: Inventory, command: Command) -> Result:
     )
 
 
-def inventory(world: World, command: Command) -> Result:
+def use(world: World, inv: Inventory, command: Command) -> Result:
+    if not command.target or not command.secondary_target:
+        return Result(text="Usage: use <item> on <targets>", success=False)
+
+    item, ambigous = find_inv_entity(world, inv, command.target)
+
+    if ambigous:
+        return Result(
+            text="That description matches multiple objects. Be more specific.",
+            success=False,
+        )
+
+    if item is None:
+        return Result(text=f"You aren't carrying {command.target}", success=False)
+
+    target, ambigous = find_entity(world, command.secondary_target)
+
+    if ambigous:
+        return Result(
+            text="That description matches multiple objects. Be more specific.",
+            success=False,
+        )
+
+    if target is None:
+        return Result(text=f"You don't see '{command.secondary_target}' here.")
+
+    interactions = target.interactions.get("use", {})
+
+    response = interactions.get(item._id)
+
+    if response is None:
+        return Result(
+            text=f"Using the {item.name} on the {target.name} has no effect.",
+            success=False,
+        )
+
+    if isinstance(response, str):
+        text = response
+    elif isinstance(response, dict):
+        text = response.get("text", "Nothing happens.")
+    else:
+        return Result(text="This interaction has an invalid defintion.", success=False)
+
     return Result(
-        text="Your inventory is empty."
-    )  # for now, i would impolement taking and droping later
+        text=text.strip(),
+        metadata={"interaction": "use", "item": item._id, "target": target._id},
+    )
 
 
-def help_action(world: World, command: Command) -> Result:
+def inventory(world: World, inv: Inventory, command: Command) -> Result:
+    if inv.is_empty():
+        return Result(text="Your inventory is empty.")
+
+    output = ["You are carying: "]
+
+    for _id in inv.items:
+        entity = world.get_entity(_id)
+        output.append(f" - {entity.name}")
+
+    return Result(text="\n".join(output))
+
+
+def help_action(world: World, inv: Inventory, command: Command) -> Result:
     return Result(
         text=(
             "AVIALABLE COMMANDS\n\n"
@@ -195,6 +251,9 @@ def help_action(world: World, command: Command) -> Result:
             "north/south                       Quick movment\n"
             "examine <object>                  Examine something\n"
             "look at <object>                  Examine something\n"
+            "take <object>                     Pick up an object"
+            "drop <object>                     Drop an object\n"
+            "use <item> on <target>            Use an item on something\n"
             "inventory                         Check your inventory\n"
             "help                              Displays this help\n"
         )
@@ -209,5 +268,8 @@ def create_registry() -> ActionRegistry:
     reg.register("examine", examine)
     reg.register("inventory", inventory)
     reg.register("help", help_action)
+    reg.register("drop", drop)
+    reg.register("use", use)
+    reg.register("take", take)
 
     return reg
