@@ -16,7 +16,7 @@ class Inventory:
         return _id in self.items
 
     def is_empty(self) -> bool:
-        return len(self.items) == 1
+        return len(self.items) == 0
 
     def clear(self) -> None:
         self.items.clear()
