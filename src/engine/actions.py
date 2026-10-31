@@ -140,3 +140,15 @@ def help_action(world: World, command: Command) -> Result:
             "help                              Displays this help\n"
         )
     )
+
+
+def create_registry() -> ActionRegistry:
+    reg = ActionRegistry()
+
+    reg.register("look", look)
+    reg.register("go", go)
+    reg.register("examine", examine)
+    reg.register("inventory", inventory)
+    reg.register("help", help_action)
+
+    return reg
