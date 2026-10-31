@@ -109,6 +109,7 @@ class Loader:
             t = definition.get("entity_type", "item")
             portable = definition.get("portable", False)
             location = definition.get("location")
+            interactions = definition.get("interactions", {})
 
             if not isinstance(name, str) or not name:
                 raise ValueError(f"Name for {_id} must be text")
@@ -130,6 +131,9 @@ class Loader:
             if not isinstance(location, str) or not location:
                 raise ValueError(f"Location for {_id} must be text")
 
+            if not isinstance(interactions, dict):
+                raise ValueError(f"Interactions for {_id} must be a mapping")
+
             entity = Entity(
                 _id,
                 name=name,
@@ -137,6 +141,7 @@ class Loader:
                 _type=t,
                 aliases=aliases,
                 portable=portable,
+                interactions=interactions,
             )
 
             world.add_entity(entity)

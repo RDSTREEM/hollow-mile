@@ -34,3 +34,26 @@ items:
 
     entity_type: object
     location: ticket_hall
+
+  maintenance_cabinet:
+    name: Maintenance Cabinet
+    description: >
+      A heavy metal cabinet stands against the wall.
+      Its small lock is marked with the number 03.
+      It refuses to open.
+
+    aliases:
+      - cabinet
+      - locked cabinet
+
+    entity_type: object
+    location: maintenance_office
+
+    interactions:
+      use:
+        brass_key:
+          text: >
+            The brass key fits perfectly.
+            You turn it. A metallic click echoes through the office and the cabinet opens.
+
+            Inside lies a folded railway document.
