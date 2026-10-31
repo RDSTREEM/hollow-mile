@@ -56,3 +56,32 @@ def find_entity(world: World, query: str):
         return None, True
 
     return None, False
+
+
+def look(world: World, command: Command) -> Result:
+    room = world.curr_room
+
+    if room is None:
+        return Result(text="You have no current location.", success=False)
+
+    output = [room.name, "", room.desc]
+
+    if room.entities:
+        output.extend(
+            ["", "You notice: "]
+        )  # todo: should change this to be changable by the metadata yaml
+
+        for _id in room.entities:
+            entity = world.get_entity(_id)
+            output.append(f" - {entity.name}")
+
+    if room.exits:
+        output.extend(["", "Available exits: "])
+
+        for d in room.exits:
+            output.append(f" - {d}")
+
+    return Result(
+        text="\n".join(output),
+        suggestions=[f"Go {d}" for d in room.exits],
+    )
