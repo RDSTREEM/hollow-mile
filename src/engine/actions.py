@@ -85,3 +85,19 @@ def look(world: World, command: Command) -> Result:
         text="\n".join(output),
         suggestions=[f"Go {d}" for d in room.exits],
     )
+
+
+def go(world: World, command: Command) -> Result:
+    if not command.target:
+        return Result(text="Go where?", success=False)
+
+    try:
+        dest = world.move(command.target)
+    except (ValueError, KeyError) as e:
+        return Result(text=str(e), success=False)
+
+    return Result(
+        text=f"You travel {command.target}. \n\n {dest.name} {dest.desc}",
+        suggestions=[f"Go {d}" for d in dest.exits],
+        metadata={"location": dest._id},
+    )
