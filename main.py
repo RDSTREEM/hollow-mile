@@ -5,8 +5,8 @@ def demo() -> World:
     world = World()
 
     platform = Room(
-        _id="platfrom",
-        name="PLatform",
+        _id="platform",
+        name="Platform",
         desc=(
             "A deserted railway platform streches into darkness."
             "The lights flicker overhead."
@@ -31,6 +31,8 @@ def demo() -> World:
     world.add_room(platform)
     world.add_room(hall)
     world.add_room(office)
+    for room in world.rooms:
+        print(room)
 
     world.connect("platform", "north", "ticket_hall", True)
 

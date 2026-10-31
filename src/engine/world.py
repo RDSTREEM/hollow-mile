@@ -16,12 +16,12 @@ class World:
         return self.get_room(self.curr)
 
     def add_room(self, room: Room) -> None:
-        if room._id not in self.rooms:
+        if room._id in self.rooms:
             return
         self.rooms[room._id] = room
 
     def add_entity(self, entity: Entity) -> None:
-        if entity._id not in self.rooms:
+        if entity._id in self.rooms:
             return
         self.entities[entity._id] = entity
 
