@@ -153,4 +153,14 @@ class Loader:
 
             for d, dest in exits.items():
                 if not isinstance(d, str) or not d:
-                    raise ValueError(f"Invalid destination for exit {d} room")
+                    raise ValueError(f"Invalid direction for exit {d} room")
+
+                if not isinstance(dest, str):
+                    raise ValueError(
+                        f"Invalid destination for exit {d}" f"in room {_id}"
+                    )
+
+                try:
+                    world.connect(_id, d, dest)
+                except KeyError as e:
+                    raise ValueError(f"Invalid exit from {_id} to {dest}: {e}") from e
