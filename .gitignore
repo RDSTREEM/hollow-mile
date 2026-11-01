@@ -11,7 +11,8 @@ __pycache__/
 
 # Build Artifcats
 build/
-dest/
+dist/
 
 # VS
 .vscode/
+

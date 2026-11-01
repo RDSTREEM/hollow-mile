@@ -11,6 +11,9 @@ dependencies = [
     "textual>=1.0.0",
     "PyYAML>=6.0",
 ]
+    
+[project.optional-dependencies]
+release = ["pyinstaller>=6.0"]
 
 [project.scripts]
 hollow-mile = "engine.cli:main"
