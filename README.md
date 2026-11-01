@@ -6,11 +6,11 @@ HOLLOW MILE is a framework for creating text-based adventures and narrative-driv
 
 ## Showcase
 
-Here's HOLLOW MILE running the showcase game (also called Hollow Mile):
+HOLLOW MILE includes a playable showcase game, also named HOLLOW MILE, built using the engine itself.
 
 ![HOLLOW MILE showcase game running in the terminal](docs/showcase.png)
 
-*The showcase demonstrates the engine's terminal interface and an example game running on it.*
+*The HOLLOW MILE showcase game running in the terminal interface.*
 
 ## Features
 
@@ -29,9 +29,9 @@ Here's HOLLOW MILE running the showcase game (also called Hollow Mile):
 
 Download the latest release from the [GitHub Releases page](../../releases).
 
-If a release includes a standalone executable, extract it and run `hollow-mile.exe` from a terminal.
+Extract the downloaded archive. If it includes the standalone executable, you can run `hollow-mile-cli.exe` from a terminal.
 
-If you download the showcase bundle, keep the showcase folder alongside the executable.
+To play the showcase game, make sure the `hollow-mile` game folder is included alongside the executable.
 
 ### Run from source
 
@@ -48,9 +48,29 @@ Install the project:
 python -m pip install -e .
 ```
 
-## Quick start
+## Running the showcase game
 
-Create a new game project:
+The repository includes a playable game named **HOLLOW MILE**, built using the engine itself (you need to download the release with the showcase to get it).
+
+Validate the game:
+
+```bash
+hollow-mile validate hollow-mile
+```
+
+Run it:
+
+```bash
+hollow-mile run hollow-mile
+```
+
+The showcase game demonstrates the engine's features and provides an example of how a complete game can be defined using YAML files.
+
+You can inspect its files to see how locations, entities, dialogue, puzzles, and interactions are structured.
+
+## Creating your own game
+
+Create a new project:
 
 ```bash
 hollow-mile init my-game
@@ -68,18 +88,30 @@ Run it:
 hollow-mile run my-game
 ```
 
-## Showcase game
-
-The showcase project demonstrates how HOLLOW MILE can run a separate game using the same engine.
-
-```bash
-hollow-mile validate showcase
-hollow-mile run showcase
-```
-
-You can use it as a starting point when creating your own game.
+Your game content is stored separately from the engine, allowing you to create multiple independent games using the same installation.
 
 ## Project structure
+
+```text
+hollow-mile/
+├── docs/
+│   ├── showcase.png
+│   └── YAML_REFERENCE.md
+├── hollow-mile/
+│   ├── story.yaml
+│   ├── config.yaml
+│   ├── locations/
+│   ├── entities/
+│   └── dialogue/
+├── src/
+│   └── engine/
+├── README.md
+├── pyproject.toml
+├── build.bat
+└── build.py
+```
+
+A typical game project contains:
 
 ```text
 my-game/
@@ -96,9 +128,9 @@ my-game/
     └── ...
 ```
 
-See [YAML Reference](docs/YAML_REFERENCE.md) for details about the content format.
+See [YAML Reference](docs/YAML_REFERENCE.md) for details about defining game content.
 
-## Building from source
+## Building the executable
 
 On Windows, run:
 
@@ -120,7 +152,7 @@ dist/hollow-mile.exe
 
 ## Project status
 
-HOLLOW MILE is under active development. Features and file formats may change between releases.
+HOLLOW MILE is (was, just for Terra) under active development. Features and file formats may change between releases.
 
 ## License
 
