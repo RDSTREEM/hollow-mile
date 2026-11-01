@@ -339,6 +339,8 @@ def help_action(
             "drop <object>                     Drop an object\n"
             "use <item> on <target>            Use an item on something\n"
             "inventory                         Check your inventory\n"
+            "save                              Save your progress\n"
+            "load                              Load your saved progress\n"
             "help                              Displays this help\n"
         )
     )

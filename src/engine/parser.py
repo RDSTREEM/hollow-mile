@@ -28,6 +28,8 @@ class CommandParser:
         "get": "take",
         "drop": "drop",
         "use": "use",
+        "save": "save",
+        "load": "load",
         "help": "help",
         "?": "help",
     }
