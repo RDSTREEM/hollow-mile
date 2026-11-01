@@ -96,7 +96,7 @@ class Loader:
         metadata = self._read_yaml("story.yaml")
 
         room_data = self._load_section("rooms", "room.yaml", "rooms")
-        item_data = self._load_section("rooms", "item.yaml", "rooms")
+        item_data = self._load_section("items", "items.yaml", "items")
 
         world = World()
 

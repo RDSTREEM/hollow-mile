@@ -1,0 +1,10 @@
+rooms:
+  maintenance_office:
+    name: Maintenance Office
+    description: >
+      A cramped office filled with forgotten railway equipment. A desk sits beneath a flickering lamp.
+
+      Someone has left a drawer slightly open.
+
+    exits:
+      west: ticket_hall

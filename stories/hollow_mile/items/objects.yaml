@@ -12,29 +12,6 @@ items:
     portable: true
     location: platform
 
-  noticeboard:
-    name: Noticeboard
-    description: >
-      A faded timetable is pinned beneath a layer of dust.
-      Most of the printed dates have been scratched away.
-
-    aliases:
-      - board
-
-    location: ticket_hall
-
-  station_clock:
-    name: Station Clock
-    description: >
-      An old railway clock. Its hands are frozen at 11:47.
-      Behind the glass, something appears to have been written on the clock face.
-
-    aliases:
-      - clock
-
-    entity_type: object
-    location: ticket_hall
-
   maintenance_cabinet:
     name: Maintenance Cabinet
     description: >
