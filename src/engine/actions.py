@@ -292,6 +292,11 @@ def use(world: World, inv: Inventory, state: GameState, command: Command) -> Res
     for name, amt in res.get("increment_variables", {}).items():
         state.inc_var(name, amt)
 
+    emitted = res.get("emit", [])
+
+    if isinstance(emitted, str):
+        emitted = [emitted]
+
     return Result(
         text=text.strip(),
         metadata={
@@ -299,6 +304,7 @@ def use(world: World, inv: Inventory, state: GameState, command: Command) -> Res
             "item": item._id,
             "target": target._id,
             "state_changed": True,
+            "events": emitted,
         },
     )
 

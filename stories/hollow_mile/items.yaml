@@ -71,6 +71,8 @@ items:
           increment_variables:
             documents_found: 1
 
+          emit: cabinet_opened
+
       variants:
         - condition:
             flag: open
@@ -78,3 +80,20 @@ items:
 
           text: >
             The metal cabinet hangs open. Inside, an empty space marks where something was stored. A folded railway document lies on the shelf.
+
+  railway_document:
+    name: Railway Document
+    description: >
+      A folded railway document, yellowed with age.
+      The heading reads: HOLLOW MILE - INTERNAL
+      MAINTENANCE RECORD. Several lines have been crossed out in red ink.
+    aliases:
+      - document
+      - railway record
+      - paper
+
+    portable: true
+    location: maintenance_office
+    visible_when:
+      flag: open
+      equals: true

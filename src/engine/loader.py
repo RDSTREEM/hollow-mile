@@ -112,7 +112,7 @@ class Loader:
             portable = definition.get("portable", False)
             location = definition.get("location")
             interactions = definition.get("interactions", {})
-            visible_when = definition.get("visible_when", {})
+            visible_when = definition.get("visible_when", None)
 
             if not isinstance(name, str) or not name:
                 raise ValueError(f"Name for {_id} must be text")
@@ -137,7 +137,7 @@ class Loader:
             if not isinstance(interactions, dict):
                 raise ValueError(f"Interactions for {_id} must be a mapping")
 
-            if not isinstance(visible_when, dict):
+            if not isinstance(visible_when, dict) and not visible_when is None:
                 raise ValueError(f"Visibility rules for {_id} must be a mapping")
 
             entity = Entity(

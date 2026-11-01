@@ -8,6 +8,7 @@ from engine.inventory import Inventory
 from engine.state import GameState
 from engine.conditions import Evaluator
 from engine.engine import Engine
+from engine.events import Bus, Event
 
 __all__ = [
     "Entity",
@@ -22,4 +23,6 @@ __all__ = [
     "Evaluator",
     "GameState",
     "Engine",
+    "Bus",
+    "Event",
 ]

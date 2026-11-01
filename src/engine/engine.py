@@ -4,6 +4,7 @@ from engine.inventory import Inventory
 from engine.state import GameState
 from engine.actions import create_registry, look
 from engine.result import Result
+from engine.events import Bus
 
 
 class Engine:
@@ -17,6 +18,8 @@ class Engine:
         self.parser = CommandParser()
         self.actions = create_registry()
 
+        self.events = Bus()
+
     def start(self) -> Result:
         return look(self.world, self.inv, self.state, Command(action="look"))
 
@@ -26,4 +29,11 @@ class Engine:
         if cmd.action == "empty":
             return Result(text="")
 
-        return self.actions.execute(self.world, self.inv, self.state, cmd)
+        res = self.actions.execute(self.world, self.inv, self.state, cmd)
+
+        for event in res.metadata.get("events", []):
+            self.events.emit(
+                event, {"location": self.world.curr, "metadata": res.metadata}
+            )
+
+        return res
