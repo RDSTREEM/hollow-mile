@@ -13,7 +13,8 @@ class CommandParser:
     ACTION_ALIASES = {
         "look": "look",
         "l": "look",
-        "examine": "examine" "inspect:" "examine",
+        "examine": "examine",
+        "inspect": "examine",
         "x": "examine",
         "go": "go",
         "walk": "go",

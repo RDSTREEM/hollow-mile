@@ -71,7 +71,7 @@ items:
           increment_variables:
             documents_found: 1
 
-      descriptions:
+      variants:
         - condition:
             flag: open
             equals: true

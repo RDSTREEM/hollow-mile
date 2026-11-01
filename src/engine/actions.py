@@ -7,6 +7,18 @@ from engine.inventory import Inventory
 from engine.state import GameState
 from engine.conditions import Evaluator
 
+from typing import TypedDict, cast
+
+
+class Response(TypedDict, total=False):
+    text: str
+    condition: dict
+    failure_text: str
+    set_flags: dict[str, bool]
+    set_variables: dict[str, str | int | float]
+    increment_variables: dict[str, int | float]
+
+
 Handler = Callable[[World, Inventory, GameState, Command], Result]
 
 
@@ -136,7 +148,7 @@ def examine(world: World, inv: Inventory, state: GameState, command: Command) ->
         return Result(text=f"You dont see {command.target} here", success=False)
 
     desc = entity.desc
-    variants = entity.interactions.get("descriptions", [])
+    variants = entity.interactions.get("variants", [])
     evaluator = Evaluator(state)
 
     for variant in variants:
@@ -240,6 +252,7 @@ def use(world: World, inv: Inventory, state: GameState, command: Command) -> Res
     if not isinstance(response, dict):
         return Result(text="This interaction has an invalid defintion.", success=False)
 
+    res = cast(Response, response)
     evaluator = Evaluator(state)
     cond = response.get("condition")
 
@@ -250,13 +263,13 @@ def use(world: World, inv: Inventory, state: GameState, command: Command) -> Res
 
     text = response.get("text", "Nothing happens.")
 
-    for name, val in response.get("set_flags", {}).items():
+    for name, val in res.get("set_flags", {}).items():
         state.set_flag(name, val)
 
-    for name, val in response.get("set_variables", {}).items():
+    for name, val in res.get("set_variables", {}).items():
         state.set_var(name, val)
 
-    for name, amt in response.get("increment_variables", {}).items():
+    for name, amt in res.get("increment_variables", {}).items():
         state.inc_var(name, amt)
 
     return Result(
