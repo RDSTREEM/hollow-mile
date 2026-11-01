@@ -52,8 +52,29 @@ items:
     interactions:
       use:
         brass_key:
+          condition:
+            flag: open
+            equals: false
+
           text: >
             The brass key fits perfectly.
             You turn it. A metallic click echoes through the office and the cabinet opens.
 
             Inside lies a folded railway document.
+
+          failure_text: >
+            The cabinet is already open
+
+          set_flags:
+            open: true
+
+          increment_variables:
+            documents_found: 1
+
+      descriptions:
+        - condition:
+            flag: open
+            equals: true
+
+          text: >
+            The metal cabinet hangs open. Inside, an empty space marks where something was stored. A folded railway document lies on the shelf.

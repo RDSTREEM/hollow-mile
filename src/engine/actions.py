@@ -136,7 +136,7 @@ def examine(world: World, inv: Inventory, state: GameState, command: Command) ->
         return Result(text=f"You dont see {command.target} here", success=False)
 
     desc = entity.desc
-    variants = entity.interactions.get("descriptions", {})
+    variants = entity.interactions.get("descriptions", [])
     evaluator = Evaluator(state)
 
     for variant in variants:
