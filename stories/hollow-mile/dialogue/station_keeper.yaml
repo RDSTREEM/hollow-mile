@@ -20,55 +20,185 @@ dialogues:
           "Well. It usually is."
 
           He returns to his clipboard.
-
         choices:
           - text: "Where am I?"
-            response: >
-              "HOLLOW MILE. Small station. Not particularly
-              well known."
-
-              He glances towards the station sign.
-
-              "Though I suppose you've already noticed that."
+            next: location
 
           - text: "How do I leave?"
-            response: >
-              "The trains come and go."
-
-              He checks his watch.
-
-              "Eventually."
-
-              He makes a small mark on his clipboard.
+            next: departure
 
           - text: "What time is it?"
-            response: >
-              "Eleven forty-seven."
-
-              He looks at the clock.
-
-              "It has been eleven forty-seven for some time."
+            next: time
 
           - text: "Who are you?"
-            response: >
-              "Arthur Bell. Station keeper."
-
-              He adjusts his glasses.
-
-              "I look after the place."
+            next: identity
 
           - text: "What's on your clipboard?"
-            response: >
-              He turns the clipboard slightly away.
-
-              "Station records. Nothing you'd need to worry
-              about."
-
-              He seems rather keen to end that particular
-              subject.
+            next: clipboard
 
           - text: "Never mind."
             response: >
               "Of course."
+            next: null
 
-              He returns to studying his clipboard.
+      location:
+        text: >
+          "HOLLOW MILE. Small station. Not particularly well
+          known."
+
+          He glances towards the brass sign.
+
+          "Though I suppose you've already noticed that."
+
+          He makes a small mark on his clipboard.
+        choices:
+          - text: "Ask something else."
+            next: greeting
+
+          - text: "That's all."
+            response: >
+              "Very well."
+            next: null
+
+      departure:
+        text: >
+          "The trains come and go."
+
+          He checks his watch.
+
+          "Eventually."
+
+          He makes a small mark on his clipboard.
+
+          "You'll have to wait for the next one."
+        choices:
+          - text: "When is the next train?"
+            next: next_train
+
+          - text: "Ask something else."
+            next: greeting
+
+          - text: "That's all."
+            response: >
+              "Very well."
+            next: null
+
+      next_train:
+        text: >
+          "I couldn't tell you."
+
+          He looks up at the departure board.
+
+          "The board usually knows before I do."
+
+          He pauses.
+
+          "Though it has been rather unreliable lately."
+        choices:
+          - text: "Ask something else."
+            next: greeting
+
+          - text: "That's all."
+            response: >
+              "Very well."
+            next: null
+
+      time:
+        text: >
+          "Eleven forty-seven."
+
+          He looks at the clock.
+
+          "It has been eleven forty-seven for some time."
+
+          He seems entirely unsurprised by this.
+        choices:
+          - text: "Ask something else."
+            next: greeting
+
+          - text: "That's all."
+            response: >
+              "Very well."
+            next: null
+
+      identity:
+        text: >
+          "Arthur Bell. Station keeper."
+
+          He adjusts his glasses.
+
+          "I look after the place."
+
+          He looks down at his clipboard again.
+        choices:
+          - text: "How long have you worked here?"
+            next: employment
+
+          - text: "Ask something else."
+            next: greeting
+
+          - text: "That's all."
+            response: >
+              "Very well."
+            next: null
+
+      employment:
+        text: >
+          "Long enough."
+
+          He considers the question.
+
+          "Longer than I intended, perhaps."
+
+          He turns a page on his clipboard.
+        choices:
+          - text: "Ask something else."
+            next: greeting
+
+          - text: "That's all."
+            response: >
+              "Very well."
+            next: null
+
+      clipboard:
+        text: >
+          He turns the clipboard slightly away.
+
+          "Station records. Nothing you'd need to worry
+          about."
+
+          You catch a glimpse of several columns of names
+          and dates.
+
+          Some of the dates appear to be decades old.
+        choices:
+          - text: "What are the names?"
+            next: names
+
+          - text: "Ask something else."
+            next: greeting
+
+          - text: "That's all."
+            response: >
+              "Very well."
+            next: null
+
+      names:
+        text: >
+          Arthur closes the clipboard.
+
+          "Passengers. Arrivals. Departures."
+
+          He looks at you.
+
+          "It's important to keep records."
+
+          He doesn't elaborate.
+        choices:
+          - text: "Ask something else."
+            next: greeting
+
+          - text: "That's all."
+            response: >
+              "Very well."
+            next: null

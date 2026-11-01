@@ -414,6 +414,7 @@ def help_action(
             "drop <object>                     Drop an object\n"
             "use <item> on <target>            Use an item on something\n"
             "talk <character>                  Talk to a character\n"
+            "answer <answer>                   To solve puzzles\n"
             "inventory                         Check your inventory\n"
             "save                              Save your progress\n"
             "load                              Load your saved progress\n"
@@ -433,6 +434,7 @@ def create_registry(dialogue=None) -> ActionRegistry:
     reg.register("drop", drop)
     reg.register("use", use)
     reg.register("take", take)
+    reg.register("answer", answer)
 
     def talk_action(
         world: World, inv: Inventory, state: GameState, command: Command

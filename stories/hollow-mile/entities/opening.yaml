@@ -3,7 +3,12 @@ entities:
     name: "Station Keeper"
     description: >
       An elderly man wearing a dark railway uniform.
-      He holds a clipboard and appears to be examining its contents.
+
+      His uniform is neatly pressed, although its brass buttons
+      have lost most of their shine.
+
+      He holds a clipboard and appears to be examining its
+      contents.
     aliases:
       - man
       - keeper
@@ -12,6 +17,7 @@ entities:
     entity_type: character
     portable: false
     location: main_platform
+
   departure_board:
     name: "Departure Board"
     description: >
@@ -19,12 +25,15 @@ entities:
 
       Its rows display three departures:
 
-      11:30: NORTHGATE
-      11:47: H_LL_W M_LE
-      12:05: EASTFIELD
+      11:30  NORTHGATE
+      11:47  H_LL_W M_LE
+      12:05  EASTFIELD
 
-      The middle row looks as though someone has deliberately removed several letters.
+      The middle row looks as though someone has deliberately
+      removed several letters.
 
+      Occasionally, the mechanism clicks, but the letters
+      never seem to change.
     aliases:
       - board
     entity_type: scenery
@@ -37,6 +46,9 @@ entities:
       A large clock hangs above the station entrance.
 
       Its hands are frozen at exactly 11:47.
+
+      The glass is dusty, but the clock itself appears to be
+      in excellent condition.
     aliases:
       - clock
     entity_type: scenery
@@ -51,10 +63,11 @@ entities:
       Its engraved lettering reads:
 
       HOLLOW MILE
+
+      The letters are worn around the edges.
     aliases:
       - sign
       - brass sign
-
     entity_type: scenery
     portable: false
     location: main_platform
@@ -63,7 +76,10 @@ entities:
     name: "Wooden Bench"
     description: >
       An old wooden bench sits beneath one of the platform lamps.
+
       Its surface is worn smooth from years of use.
+      Someone has carved a small collection of initials into
+      its underside.
     aliases:
       - bench
     entity_type: scenery
@@ -74,11 +90,19 @@ entities:
     name: "Abandoned Suitcase"
     description: >
       A small leather suitcase rests beneath the wooden bench.
-      Its owner seems to have left it in a hurry.
+
+      Its leather is cracked, and one of its brass clasps
+      is missing.
+
+      A faded luggage label is attached to the handle.
+
+      The label reads:
+
+      E. BELL
     aliases:
       - suitcase
       - luggage
-    entity_type: item
+    entity_type: scenery
     portable: false
     location: main_platform
 
@@ -89,9 +113,98 @@ entities:
 
       The destination field is completely blank.
 
+      The paper is unusually clean, as though it was printed
+      only moments ago.
     aliases:
       - ticket
-
     entity_type: item
-    portable: false
+    portable: true
     location: main_platform
+
+  old_note:
+    name: "Folded Note"
+    description: >
+      A small piece of paper folded twice.
+
+      The handwriting is faded, but still readable.
+
+      "Arthur,
+
+      I know you said you'd come this time.
+
+      I hope you do.
+
+      E."
+    aliases:
+      - note
+      - paper
+    entity_type: item
+    portable: true
+    location: main_platform
+
+  old_poster:
+    name: "Railway Poster"
+    description: >
+      A faded advertisement for the HOLLOW MILE railway line.
+
+      Beneath a drawing of an old steam locomotive, the poster
+      reads:
+
+      "THE HOLLOW MILE LINE
+      ONE MILE BETWEEN DEPARTURES"
+
+      The bottom half has been torn away.
+    aliases:
+      - poster
+    entity_type: scenery
+    portable: false
+    location: ticket_hall
+
+  ticket_counters:
+    name: "Ticket Counters"
+    description: >
+      Three ticket counters stand along the northern wall.
+
+      Their shutters are closed.
+
+      Behind the dusty glass, you can just make out several
+      empty shelves and an old ticket printer.
+    aliases:
+      - counters
+      - counter
+      - windows
+    entity_type: scenery
+    portable: false
+    location: ticket_hall
+
+  old_timetable:
+    name: "Old Timetable"
+    description: >
+      A printed timetable hangs beside the ticket counters.
+
+      Most of its ink has faded.
+
+      The remaining entries list departures to Northgate,
+      Eastfield, and several places you do not recognize.
+
+      There is no mention of Platform 0.
+    aliases:
+      - timetable
+    entity_type: scenery
+    portable: false
+    location: ticket_hall
+
+  service_desk:
+    name: "Service Desk"
+    description: >
+      A wooden desk stands beneath a flickering lamp.
+
+      Several sheets of paper are stacked neatly on its surface.
+
+      Most appear to be routine station records. One sheet has
+      been left face down.
+    aliases:
+      - desk
+    entity_type: scenery
+    portable: false
+    location: ticket_hall

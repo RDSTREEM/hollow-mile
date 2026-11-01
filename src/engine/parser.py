@@ -94,7 +94,7 @@ class CommandParser:
         if action in {"inventory", "help", "look"}:
             return Command(action, target=target or None, raw=raw)
 
-        if action in {"take", "drop", "examine"}:
+        if action in {"take", "drop", "examine", "answer"}:
             if action == "take" and target.startswith("up "):
                 target = self._clean_target(target[3:])
 
