@@ -11,6 +11,7 @@ from engine import Entity, Room, World
 class Story:
     metadata: dict[str, Any]
     world: World
+    config: dict[str, Any]
 
 
 """
@@ -43,6 +44,57 @@ class Loader:
             raise ValueError(f"{filename} must contain a YAML mapping")
 
         return data
+
+    def _load_config(self) -> dict:
+        config = self.path / "config.yaml"
+
+        defaults = {
+            "ui": {
+                "title": "HOLLOW MILE",
+                "subtitle": "A Station That Should Not Exist",
+                "theme": {
+                    "background": "#000000",
+                    "surface": "#080808",
+                    "text": "#b5b5b5",
+                    "muted": "#777777",
+                    "accent": "#d5a85f",
+                    "secondary": "#9ca88e",
+                    "error": "#d58b76",
+                    "border": "#333333",
+                },
+                "layout": {
+                    "sidebar": True,
+                    "sidebar_width": 32,
+                    "header": True,
+                    "footer": False,
+                },
+                "command": {
+                    "placeholder": "What do you do?",
+                },
+            }
+        }
+
+        if not config.exists():
+            return defaults
+
+        c = self._read_yaml(config)
+        ui = c.get("ui", {})
+
+        if not isinstance(ui, dict):
+            raise ValueError("config.yaml: ui must be a mapping")
+
+        result = defaults.copy()
+        result["ui"] = {**defaults["ui"], **ui}
+
+        for section in ("theme", "layout", "command"):
+            section_data = result["ui"].get(section, {})
+
+            if not isinstance(section_data, dict):
+                raise ValueError(f"{section} should be a mapping")
+
+            result["ui"][section] = {**defaults["ui"][section], **section_data}
+
+        return result
 
     def _load_indexed_files(self, folder_name: str, section_name: str) -> dict:
         folder = self.path / folder_name
@@ -94,6 +146,7 @@ class Loader:
 
     def load(self) -> Story:
         metadata = self._read_yaml("story.yaml")
+        config = self._load_config()
 
         room_data = self._load_section("rooms", "room.yaml", "rooms")
         item_data = self._load_section("items", "items.yaml", "items")
@@ -111,7 +164,7 @@ class Loader:
 
         world.set_curr(start_room)
 
-        return Story(metadata=metadata, world=world)
+        return Story(metadata=metadata, world=world, config=config)
 
     def _load_rooms(self, room_data: dict, world: World):
         rooms = room_data.get("rooms")

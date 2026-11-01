@@ -1,0 +1,22 @@
+ui:
+  title: "HOLLOW MILE"
+  subtitle: "A Station That Should Not Exist"
+
+  theme:
+    background: "#000000"
+    surface: "#080808"
+    text: "#b5b5b5"
+    muted: "#777777"
+    accent: "#d5a85f"
+    secondary: "#9ca88e"
+    error: "#d5a85b"
+    border: "#333333"
+
+  layout:
+    sidebar: true
+    sidebar_width: 32
+    header: true
+    footer: false
+
+  command:
+    placeholder: "What do you do?"
