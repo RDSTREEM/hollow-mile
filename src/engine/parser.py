@@ -106,6 +106,9 @@ class CommandParser:
 
             return Command("unknown", target=normalized, raw=raw)
 
+        if action == "talk" and target.startswith("to "):
+            target = self._clean_target(target[3:])
+
         return Command(action, target=target, raw=raw)
 
     def _clean_target(self, target):
