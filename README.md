@@ -2,163 +2,126 @@
 
 **A reusable, data-driven interactive-fiction engine built with Python.**
 
-HOLLOW MILE is a modular engine for creating text adventures and narrative-driven games. It separates game logic from story content, allowing developers to build different worlds and experiences using structured YAML files rather than hardcoding individual games.
+HOLLOW MILE is a framework for creating text-based adventures and narrative-driven games. It separates the game engine from story content, allowing you to build multiple games using YAML files without rewriting the underlying engine.
 
-Inspired by classic interactive fiction and narrative RPGs, HOLLOW MILE provides systems for world navigation, entity interactions, inventory management, dialogue, puzzles, and conditional game events.
+## Showcase
 
-Built with Python, Textual, and PyYAML.
+Here's HOLLOW MILE running the showcase game (also called Hollow Mile):
+
+![HOLLOW MILE showcase game running in the terminal](docs/showcase.png)
+
+*The showcase demonstrates the engine's terminal interface and an example game running on it.*
 
 ## Features
 
-- **Data-driven worlds:** Define locations, entities, and game content through YAML.
-- **World navigation:** Connect locations through directional exits.
-- **Entity system:** Define objects, characters, aliases, and portability.
-- **Inventory:** Pick up, carry, and drop items.
-- **Interactions:** Use inventory items on objects and characters.
-- **Dialogue:** Create conversations using branching dialogue nodes.
-- **Puzzles:** Define answer-based interactions.
-- **Game state:** Support flags, variables, conditions, and state changes.
-- **Configurable UI:** Customize the terminal interface through YAML configuration.
-- **Project management:** Initialize, validate, and run story projects through the CLI.
+- YAML-defined stories, locations, entities, and dialogue
+- Location navigation and conditional exits
+- Entity inspection, interaction, and inventory management
+- Branching dialogue with conditional choices
+- Puzzles and item-based interactions
+- Game state using flags and variables
+- Configurable terminal interface
+- CLI tools for creating, validating, and running projects
 
 ## Installation
 
-There are two ways to get HOLLOW MILE.
+### Download a release
 
-### Option 1: Download from GitHub Releases
+Download the latest release from the [GitHub Releases page](../../releases).
 
-If you just want to use HOLLOW MILE without installing Python or its dependencies, download a prebuilt release.
+If a release includes a standalone executable, extract it and run `hollow-mile.exe` from a terminal.
 
-Visit the repository's **Releases** page and download the appropriate package.
+If you download the showcase bundle, keep the showcase folder alongside the executable.
 
-Available packages:
-
-| Download | Contents |
-|---|---|
-| HOLLOW MILE CLI | Standalone engine executable |
-| HOLLOW MILE Showcase | Engine executable bundled with the showcase game |
-
-Extract the downloaded archive and run the executable through your terminal.
-
-For example:
-
-```powershell
-.\hollow-mile.exe init my_game
-.\hollow-mile.exe validate my_game
-.\hollow-mile.exe run my_game
-```
-
-The showcase package includes an example game that can be run immediately.
-
-### Option 2: Build from Source
-
-For development or modifying the engine, you can install HOLLOW MILE directly from its source code.
-
-**Requirements:**
-- Python 3.12 or newer
-- Git
-- pip
+### Run from source
 
 Clone the repository:
 
 ```bash
-git clone https://github.com/YOUR_USERNAME/hollow-mile.git
+git clone <repository-url>
 cd hollow-mile
 ```
 
 Install the project:
 
 ```bash
-pip install -e .
+python -m pip install -e .
 ```
 
-This installs HOLLOW MILE in editable mode along with its dependencies.
+## Quick start
 
-You can now use the CLI:
+Create a new game project:
 
 ```bash
-hollow-mile init my_game
-hollow-mile validate my_game
-hollow-mile run my_game
+hollow-mile init my-game
 ```
 
-## Quick Start
-
-Create a new story project:
+Validate it:
 
 ```bash
-hollow-mile init my_game
+hollow-mile validate my-game
 ```
 
-This generates a basic project structure containing story metadata, configuration, locations, entities, and dialogue directories.
-
-Validate your project:
+Run it:
 
 ```bash
-hollow-mile validate my_game
+hollow-mile run my-game
 ```
 
-Run your game:
+## Showcase game
+
+The showcase project demonstrates how HOLLOW MILE can run a separate game using the same engine.
 
 ```bash
-hollow-mile run my_game
+hollow-mile validate showcase
+hollow-mile run showcase
 ```
 
-## Showcase Game
+You can use it as a starting point when creating your own game.
 
-HOLLOW MILE includes a small showcase game demonstrating how a playable project can be created using the engine.
-
-It serves as an example of how locations, entities, interactions, and other game content can be defined independently of the engine itself.
-
-The showcase is intentionally small and is primarily intended to demonstrate the engine's capabilities and project structure.
-
-## Project Structure
-
-A typical HOLLOW MILE game project looks like this:
+## Project structure
 
 ```text
-my_game/
+my-game/
 ├── story.yaml
 ├── config.yaml
-│
 ├── locations/
 │   ├── index.yaml
 │   └── ...
-│
 ├── entities/
 │   ├── index.yaml
 │   └── ...
-│
 └── dialogue/
     ├── index.yaml
     └── ...
 ```
 
-Game content is separated into indexed YAML files, making projects easier to organize and expand.
+See [YAML Reference](docs/YAML_REFERENCE.md) for details about the content format.
 
-## Commands
+## Building from source
 
-| Command | Description |
-|---|---|
-| `hollow-mile init <path>` | Creates a new project |
-| `hollow-mile validate <path>` | Validates a project |
-| `hollow-mile run <path>` | Runs a project |
+On Windows, run:
 
-## Technology
+```bat
+build.bat
+```
 
-- **Python 3.12+** — Core engine.
-- **Textual** — Terminal user interface.
-- **PyYAML** — YAML parsing and data loading.
-- **setuptools** — Python packaging.
+The executable will be generated at:
 
-## Project Status
+```text
+dist/hollow-mile.exe
+```
 
-HOLLOW MILE is currently under active development. Features, internal systems, and project formats may change between releases.
+## Requirements
+
+- Python 3.12+
+- Textual
+- PyYAML
+
+## Project status
+
+HOLLOW MILE is under active development. Features and file formats may change between releases.
 
 ## License
 
-See [LICENSE](LICENSE) for licensing information.
-
----
-
-**HOLLOW MILE — Build a world. Give it rules. Let it tell a story.**
+See the `LICENSE` file for licensing information.
