@@ -3,7 +3,7 @@ class GameState:
         self.flags: dict[str, bool] = {}
         self.vars: dict[str, int | float | str] = {}
 
-    def get_flat(self, name: str, default: bool = False) -> bool:
+    def get_flag(self, name: str, default: bool = False) -> bool:
         return self.flags.get(name, default)
 
     def set_flag(self, name: str, val: bool) -> None:

@@ -5,6 +5,8 @@ from engine.parser import Command, CommandParser
 from engine.result import Result
 from engine.actions import ActionRegistry, create_registry
 from engine.inventory import Inventory
+from engine.state import GameState
+from engine.conditions import Evaluator
 
 __all__ = [
     "Entity",
@@ -16,4 +18,6 @@ __all__ = [
     "ActionRegistry",
     "create_registry",
     "Inventory",
+    "Evaluator",
+    "GameState",
 ]
