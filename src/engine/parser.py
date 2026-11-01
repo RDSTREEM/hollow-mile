@@ -30,7 +30,6 @@ class CommandParser:
         "use": "use",
         "talk": "talk",
         "speak": "talk",
-        "talk to": "talk",
         "save": "save",
         "load": "load",
         "help": "help",
