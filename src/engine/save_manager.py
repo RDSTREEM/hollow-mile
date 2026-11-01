@@ -1,14 +1,13 @@
 import json
 from pathlib import Path
 from typing import Any
-from engine import Engine
 
 
 class SaveManager:
     FORMAT_VERSION = 1
 
     @staticmethod
-    def save(engine: Engine, path: str | Path) -> None:
+    def save(engine, path: str | Path) -> None:
         path = Path(path)
         path.parent.mkdir(parents=True, exist_ok=True)
 
@@ -29,7 +28,7 @@ class SaveManager:
         tmp.replace(path)
 
     @staticmethod
-    def load(engine: Engine, path: str | Path) -> None:
+    def load(engine, path: str | Path) -> None:
         path = Path(path)
 
         data = json.loads(path.read_text(encoding="utf-8"))
@@ -46,7 +45,7 @@ class SaveManager:
         engine.state.vars = data["variables"].copy()
 
     @staticmethod
-    def _validate(engine: Engine, data: Any) -> None:
+    def _validate(engine, data: Any) -> None:
         if not isinstance(data, dict):
             raise ValueError("Invalid save file format.")
 

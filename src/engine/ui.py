@@ -12,10 +12,98 @@ class UI(App):
     TITLE = "HOLLOW MILE"
     SUB_TITLE = "A Station That Should Not Exist"
 
-    CSS = """ """
+    ENABLE_COMMAND_PALETTE = False
+
+    CSS = """
+    
+    Header {
+        background: #000000;
+        color: #888888;
+        text-style: none;
+    }
+
+    HeaderTitle {
+        color: #aaaaaa;
+        text-style: none;
+    }
+
+    HeaderSubtitle {
+        color: #777777;
+        text-style: none;
+    }
+
+    HeaderIcon {
+        color: #888888;
+    }
+
+    CommandPalette {
+        display: none;
+    }
+
+    Screen {
+        background: #000000;
+        color: #b5b5b5;
+    }
+
+    #main {
+        height: 1fr;
+    }
+
+    #content {
+        width: 1fr;
+        height: 1fr;
+        padding: 1 2;
+    }
+
+    #story-log {
+        height: 1fr;
+        border: none;
+        background: #000000;
+        padding: 1 2;
+        scrollbar-color: #333333;
+    }
+
+    #command {
+        height: 3;
+        margin-top: 1;
+        border: round #555555;
+        background: #000000;
+    }
+
+    #sidebar {
+        width: 32;
+        height: 1fr;
+        border-left: solid #333333;
+        padding: 1 2;
+        background: #000000;
+    }
+
+    #sidebar-title {
+        color: #cccccc;
+        text-style: bold;
+        margin-bottom: 1;
+    }
+
+    #sidebar-info {
+        height: 1fr;
+    }
+
+    Input {
+        color: #cccccc;
+        background: #000000;
+    }
+
+    Input:focus {
+        border: round #aaaaaa;
+    }
+
+    Footer {
+        background: #080808;
+        color: #777777;
+    }    """
 
     BINDINGS = [
-        ("ctrl + 5", "save_game", "Save"),
+        ("ctrl + s", "save_game", "Save"),
         ("ctrl + o", "load_game", "Load"),
         ("f1", "save_game", "Help"),
         ("ctrl + q", "save_game", "Quit"),
@@ -38,7 +126,7 @@ class UI(App):
                 yield Static("HOLLOW MILE", id="sidebar-title")
                 yield Static("", id="sidebar-info")
 
-        yield Footer()
+        # yield Footer()
 
     def on_mount(self) -> None:
         self._write_line("HOLLOW MILE", style="bold #d5a85f")
@@ -60,7 +148,7 @@ class UI(App):
         if not cmd:
             return
 
-        self._write_line(f"> {cmd}", style="bold #d5a85f")
+        self._write_line(f"\n> {cmd}", style="bold #d5a85f")
 
         if cmd.lower() in {"quit", "exit"}:
             self.action_quit_game()
