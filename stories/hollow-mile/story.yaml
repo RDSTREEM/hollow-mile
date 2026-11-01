@@ -1,0 +1,7 @@
+id: my_game
+title: My Story
+subtitle: An Interactive Fiction Adventure
+author: Author
+version: "1.0"
+start_location: starting_area
+            

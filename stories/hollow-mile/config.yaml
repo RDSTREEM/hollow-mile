@@ -1,0 +1,23 @@
+ui:
+    title: "MY STORY"
+    subtitle: "An Interactive Fiction Adventure"
+
+    theme:
+        background: "#000000"
+        surface: "#080808"
+        text: "#b5b5b5"
+        muted: "#777777"
+        accent: "#d5a85f"
+        secondary: "#9ca88e"
+        error: "#d58b76"
+        border: "#333333"
+
+    layout:
+        sidebar: true
+        sidebar_width: 32
+        header: true
+        footer: false
+
+    command:
+        placeholder: "What do you do?"
+            

@@ -29,7 +29,9 @@ class UI(App):
         self.layout = config.get("layout", {})
         self.command_config = config.get("command", {})
 
-        self.game_title = config.get("title", "HOLLOW MILE")
+        self.game_title = config.get(
+            "title", "HOLLOW MILE"
+        )  # just as a backup so its fine :)
         self.game_subtitle = config.get("subtitle", "A Station That Should Not Exist")
 
         self.title = self.game_title

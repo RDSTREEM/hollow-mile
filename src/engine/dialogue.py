@@ -1,4 +1,3 @@
-import re
 from typing import Any
 
 from engine.conditions import Evaluator
@@ -89,7 +88,7 @@ class DialogueManager:
             self.state.set_flag(name, val)
 
         for name, val in effects.get("set_variables", {}).items():
-            self.state.set_vars(name, val)
+            self.state.set_var(name, val)
 
         for name, amt in effects.get("increment_variables", {}).items():
             self.state.inc_var(name, amt)

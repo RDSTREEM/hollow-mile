@@ -1,0 +1,74 @@
+dialogues:
+  station_keeper:
+    start: greeting
+
+    nodes:
+      greeting:
+        text: >
+          "Ah. There you are."
+
+          He looks up from his clipboard.
+
+          "I was beginning to wonder whether you'd arrived."
+
+          He studies you for a moment.
+
+          "First time here?"
+
+          He doesn't wait for an answer.
+
+          "Well. It usually is."
+
+          He returns to his clipboard.
+
+        choices:
+          - text: "Where am I?"
+            response: >
+              "HOLLOW MILE. Small station. Not particularly
+              well known."
+
+              He glances towards the station sign.
+
+              "Though I suppose you've already noticed that."
+
+          - text: "How do I leave?"
+            response: >
+              "The trains come and go."
+
+              He checks his watch.
+
+              "Eventually."
+
+              He makes a small mark on his clipboard.
+
+          - text: "What time is it?"
+            response: >
+              "Eleven forty-seven."
+
+              He looks at the clock.
+
+              "It has been eleven forty-seven for some time."
+
+          - text: "Who are you?"
+            response: >
+              "Arthur Bell. Station keeper."
+
+              He adjusts his glasses.
+
+              "I look after the place."
+
+          - text: "What's on your clipboard?"
+            response: >
+              He turns the clipboard slightly away.
+
+              "Station records. Nothing you'd need to worry
+              about."
+
+              He seems rather keen to end that particular
+              subject.
+
+          - text: "Never mind."
+            response: >
+              "Of course."
+
+              He returns to studying his clipboard.

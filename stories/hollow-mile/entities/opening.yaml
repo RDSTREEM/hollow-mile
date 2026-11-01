@@ -1,0 +1,97 @@
+entities:
+    station_keeper:
+        name: "Station Keeper"
+        description: >
+        An elderly man wearing a dark railway uniform.
+        He holds a clipboard and appears to be examining its contents.
+        aliases:
+            - man
+            - keeper
+            - arthur
+            - station master
+        entity_type: character
+        portable: false
+        location: main_platform
+    departure_board:
+        name: "Departure Board"
+        description: >
+            A large mechanical departure board hangs above the platform.
+
+            Its rows display three departures:
+
+            11:30: NORTHGATE
+            11:47: H_LL_W M_LE
+            12:05: EASTFIELD
+
+            The middle row looks as though someone has deliberately removed several letters.
+        
+        aliases:
+            - board
+        entity_type: scenery
+        portable: false
+        location: main_platform
+    
+    station_clock:
+        name: "Station Clock"
+        description: >
+            A large clock hangs above the station entrance.
+
+            Its hands are frozen at exactly 11:47.
+        aliases:
+            - clock
+        entity_type: scenery
+        portable: false
+        location: main_platform
+    
+    station_sign:
+        name: "Station Sign"
+        description: >
+            A brass sign fixed to the wall.
+
+            Its engraved lettering reads:
+
+            HOLLOW MILE
+        aliases:
+            - sign
+            - brass sign
+        
+        entity_type: scenery
+        portable: false
+        location: main_platform
+    
+    wooden_bench:
+        name: "Wooden Bench"
+        description: >
+            An old wooden bench sits beneath one of the platform lamps.
+            Its surface is worn smooth from years of use.
+        aliases:
+            - bench
+        entity_type: scenery
+        portable: false
+        location: main_platform
+    
+    abandoned_suitcase:
+        name: "Abandoned Suitcase"
+        description: >
+            A small leather suitcase rests beneath the wooden bench.
+            Its owner seems to have left it in a hurry.
+        aliases:
+            - suitcase
+            - luggage
+        entity_type: item
+        portable: false
+        location: main_platform
+    
+    railway_ticket:
+        name: "Railway Ticket"
+        description: >
+            A railway ticket bearing your name.
+
+            The destination field is completely blank.
+        
+        aliases:
+            - ticket
+        
+        entity_type: item
+        portable: false
+        location: main_platform

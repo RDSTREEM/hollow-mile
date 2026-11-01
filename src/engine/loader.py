@@ -26,7 +26,6 @@ class Loader:
 
     def _read_yaml(self, path: Path) -> dict:
 
-        # p = self.path / filename
         if not path.exists():
             raise FileNotFoundError(f"Story file not found: {path}")
 
@@ -195,9 +194,7 @@ class Loader:
         metadata = self._read_yaml(self.path / "story.yaml")
         config = self._load_config()
 
-        location_data = self._load_section(
-            "locations", "locations.yaml", "locations"
-        )
+        location_data = self._load_section("locations", "locations.yaml", "locations")
         entity_data = self._load_section("entities", "entities.yaml", "entities")
 
         dialogues = self._load_dialogues()
@@ -221,7 +218,9 @@ class Loader:
         locations = location_data.get("locations")
 
         if not isinstance(locations, dict) or not locations:
-            raise ValueError("Location data must contain a non-empty 'locations' mapping")
+            raise ValueError(
+                "Location data must contain a non-empty 'locations' mapping"
+            )
 
         for _id, definition in locations.items():
             if not isinstance(definition, dict):
@@ -318,7 +317,9 @@ class Loader:
 
             for d, dest in exits.items():
                 if not isinstance(d, str) or not d:
-                    raise ValueError(f"Invalid direction for exit {d} at location {_id}")
+                    raise ValueError(
+                        f"Invalid direction for exit {d} at location {_id}"
+                    )
 
                 if not isinstance(dest, str):
                     raise ValueError(

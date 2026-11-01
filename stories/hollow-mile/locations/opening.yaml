@@ -1,0 +1,30 @@
+locations:
+  main_platform:
+    name: "Main Platform"
+    description: >
+      A long, narrow platform streches beneath a ceiling of dark iron beams.
+
+      The station is old, but not quite abondoned. Several lamps still work, casting uneven pools of yellow light across the concrete.
+
+      A mechanical departure board hangs above the platform. Its letters occasionally click and shuffle, though the destination never seems to change.
+
+      At the far end, a tunnel disappears into darkness.
+
+      A brass sign identifies the station as HOLLOW MILE.
+
+      An elderly man stands near the station entrance, studying a clipboard.
+    exits:
+      east: ticket_hall
+
+  ticket_hall:
+    name: "Ticket Hall"
+    description: >
+      The ticket hall is a broad, rectangular room with a high ceiling and dusty windows.
+
+      A row of ticket counters lines the northern wall. Their shutters are closed and faded timetables hang above them.
+
+      An old poster advertises the HOLLOW MILE railway line.
+
+      A narrow doorway leads back to the platform.
+    exits:
+      west: main_platform
