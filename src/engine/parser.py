@@ -30,6 +30,8 @@ class CommandParser:
         "use": "use",
         "talk": "talk",
         "speak": "talk",
+        "answer": "answer",
+        "solve": "solve",
         "save": "save",
         "load": "load",
         "help": "help",
@@ -104,6 +106,9 @@ class CommandParser:
                 return Command("go", target=target, raw=raw)
 
             return Command("unknown", target=normalized, raw=raw)
+
+        if action == "answer":
+            return Command("answer", target=target, raw=raw)
 
         if action == "talk" and target.startswith("to "):
             target = self._clean_target(target[3:])

@@ -41,7 +41,7 @@ class World:
         self.locations[location._id] = location
 
     def add_entity(self, entity: Entity) -> None:
-        if entity._id in self.locations:
+        if entity._id in self.entities:
             return
         self.entities[entity._id] = entity
 

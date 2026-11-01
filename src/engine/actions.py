@@ -311,6 +311,79 @@ def use(world: World, inv: Inventory, state: GameState, command: Command) -> Res
     )
 
 
+def answer(world: World, inv: Inventory, state: GameState, command: Command) -> Result:
+    if not command.target:
+        return Result(text="\nWhat is your answer?", success=False)
+
+    location = world.current_location
+    evaluator = Evaluator(state)
+
+    puzzles = []
+
+    for _id in location.entities:
+        entity = world.get_entity(_id)
+
+        if not evaluator.eval(entity.visible_when):
+            continue
+
+        interaction = entity.interactions.get("answer")
+
+        if interaction:
+            puzzles.append((entity, interaction))
+
+    if not puzzles:
+        return Result(
+            text="\nThere is nothing here that requires an answer.", success=False
+        )
+
+    if len(puzzles) > 1:
+        return Result(
+            text="\nYou have to specify which puzzle you are answering.", success=False
+        )
+
+    entity, puzzle = puzzles[0]
+
+    accepted = puzzle.get("accepted", [])
+
+    if isinstance(accepted, str):
+        accepted = [accepted]
+
+    submitted = " ".join(command.target.lower().split())
+    accepted = [" ".join(a.lower().split()) for a in accepted]
+
+    if submitted not in accepted:
+        return Result(
+            text=puzzle.get("failure_text", "\nThat doesn't seem right."), success=False
+        )
+
+    if puzzle.get("condition") and not evaluator.eval(puzzle["condition"]):
+        return Result(text="\nYou can't solve this yet", success=False)
+
+    for name, value in puzzle.get("set_flags", {}).items():
+        state.set_flag(name, value)
+
+    for name, value in puzzle.get("set_variables", {}).items():
+        state.set_var(name, value)
+
+    for name, amount in puzzle.get("increment_variables", {}).items():
+        state.inc_var(name, amount)
+
+    emitted = puzzle.get("emit", [])
+
+    if isinstance(emitted, str):
+        emitted = [emitted]
+
+    return Result(
+        text=puzzle.get("success_text", "\nCorrect."),
+        metadata={
+            "interaction": "answer",
+            "target": entity._id,
+            "state_changed": True,
+            "events": emitted,
+        },
+    )
+
+
 def inventory(
     world: World, inv: Inventory, state: GameState, command: Command
 ) -> Result:
