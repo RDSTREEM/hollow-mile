@@ -236,6 +236,7 @@ def use(world: World, inv: Inventory, state: GameState, command: Command) -> Res
 
     if isinstance(response, str):
         response = {"text": response}
+
     if not isinstance(response, dict):
         return Result(text="This interaction has an invalid defintion.", success=False)
 
@@ -252,9 +253,20 @@ def use(world: World, inv: Inventory, state: GameState, command: Command) -> Res
     for name, val in response.get("set_flags", {}).items():
         state.set_flag(name, val)
 
+    for name, val in response.get("set_variables", {}).items():
+        state.set_var(name, val)
+
+    for name, amt in response.get("increment_variables", {}).items():
+        state.inc_var(name, amt)
+
     return Result(
         text=text.strip(),
-        metadata={"interaction": "use", "item": item._id, "target": target._id},
+        metadata={
+            "interaction": "use",
+            "item": item._id,
+            "target": target._id,
+            "state_changed": True,
+        },
     )
 
 
