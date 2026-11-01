@@ -11,80 +11,79 @@ def create_project(path: Path) -> None:
     if path.exists():
         raise FileExistsError("Destination alr exists")
 
-    story = """
-        id: my_game
-        title: My Story
-        subtitle: An Interactive Fiction Adventure
-        author: Author
-        version: "1.0"
-        start_room: starting_room  
+    story = """\
+id: my_game
+title: My Story
+subtitle: An Interactive Fiction Adventure
+author: Author
+version: "1.0"
+start_room: starting_room  
             """
 
-    config = """
-        ui:
-        title: "MY STORY"
-        subtitle: "An Interactive Fiction Adventure"
+    config = """\
+ui:
+    title: "MY STORY"
+    subtitle: "An Interactive Fiction Adventure"
 
-        theme:
-            background: "#000000"
-            surface: "#080808"
-            text: "#b5b5b5"
-            muted: "#777777"
-            accent: "#d5a85f"
-            secondary: "#9ca88e"
-            error: "#d58b76"
-            border: "#333333"
+    theme:
+        background: "#000000"
+        surface: "#080808"
+        text: "#b5b5b5"
+        muted: "#777777"
+        accent: "#d5a85f"
+        secondary: "#9ca88e"
+        error: "#d58b76"
+        border: "#333333"
 
-        layout:
-            sidebar: true
-            sidebar_width: 32
-            header: true
-            footer: false
+    layout:
+        sidebar: true
+        sidebar_width: 32
+        header: true
+        footer: false
 
-        command:
-            placeholder: "What do you do?"
+    command:
+        placeholder: "What do you do?"
             """
 
-    room_index = """
-        files:
-            - starting_area.yaml
+    room_index = """\
+files:
+    - starting_area.yaml
             """
 
-    starting_room = """
-        rooms:
-            starting_room:
-                name: "A Quiet Room"
-                description: >
-                    You are standing in a quiet room.
-                    An exit leads east.
-                exits:
-                    east: hallway
-            
-            hallway:
-                name: "Hallway"
-                description: >
-                    A narrow hallway stretches before you.
-                    You can return west.
-                exits:
-                    west: starting_room
-
+    starting_room = """\
+rooms:
+    starting_room:
+        name: "A Quiet Room"
+        description: >
+            You are standing in a quiet room.
+            An exit leads east.
+        exits:
+            east: hallway
+    
+    hallway:
+        name: "Hallway"
+        description: >
+            A narrow hallway stretches before you.
+            You can return west.
+        exits:
+            west: starting_room
             """
 
-    item_index = """
-        files:
-            - objects.yaml
+    item_index = """\
+files:
+    - objects.yaml
             """
 
-    objects = """
-        items:
-            old_note:
-                name: "Old Note"
-                description: "A small note with faded writing"
-                aliases:
-                    - note
-                entity_type: item
-                portable: true
-                location: starting_room
+    objects = """\
+items:
+    old_note:
+        name: "Old Note"
+        description: "A small note with faded writing"
+        aliases:
+            - note
+        entity_type: item
+        portable: true
+        location: starting_room
             """
 
     files = {

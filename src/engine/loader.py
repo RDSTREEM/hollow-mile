@@ -27,21 +27,20 @@ class Loader:
     def __init__(self, path: str | Path):
         self.path = Path(path)
 
-    def _read_yaml(self, filename: str | Path) -> dict:
+    def _read_yaml(self, path: Path) -> dict:
 
-        p = self.path / filename
-
-        if not p.exists():
-            raise FileNotFoundError(f"Story file not found: {p}")
+        # p = self.path / filename
+        if not path.exists():
+            raise FileNotFoundError(f"Story file not found: {path}")
 
         try:
-            with p.open("r", encoding="utf-8") as file:
+            with path.open("r", encoding="utf-8") as file:
                 data = yaml.safe_load(file)
         except yaml.YAMLError as e:
-            raise ValueError(f"Invalid YAML in {filename}: {e}")
+            raise ValueError(f"Invalid YAML in {path}: {e}")
 
         if not isinstance(data, dict):
-            raise ValueError(f"{filename} must contain a YAML mapping")
+            raise ValueError(f"{path} must contain a YAML mapping")
 
         return data
 
@@ -145,7 +144,7 @@ class Loader:
         return self._read_yaml(self.path / legacy)
 
     def load(self) -> Story:
-        metadata = self._read_yaml("story.yaml")
+        metadata = self._read_yaml(self.path / "story.yaml")
         config = self._load_config()
 
         room_data = self._load_section("rooms", "room.yaml", "rooms")
