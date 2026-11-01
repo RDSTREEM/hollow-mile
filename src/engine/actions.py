@@ -45,16 +45,16 @@ class ActionRegistry:
 
 def find_entity(world: World, query: str, state: GameState):
 
-    room = world.curr_room
+    location = world.current_location
 
-    if room is None:
+    if location is None:
         return None, False
 
     query = " ".join(query.lower().split())
 
     matches = []
 
-    for _id in room.entities:
+    for _id in location.entities:
         entity = world.get_entity(_id)
 
         evaluator = Evaluator(state)
@@ -77,7 +77,7 @@ def find_inv_entity(world: World, inv: Inventory, query: str):
     query = " ".join(query.lower().split())
     matches = []
 
-    for _id in inv.items:
+    for _id in inv.entities:
         entity = world.get_entity(_id)
 
         if entity.matches(query):
@@ -90,17 +90,17 @@ def find_inv_entity(world: World, inv: Inventory, query: str):
 
 
 def look(world: World, inv: Inventory, state: GameState, command: Command) -> Result:
-    room = world.curr_room
+    location = world.current_location
 
-    if room is None:
+    if location is None:
         return Result(text="You have no current location.", success=False)
 
-    output = [room.name, "", room.desc]
+    output = [location.name, "", location.desc]
 
     evaluator = Evaluator(state)
     visible = []
 
-    for _id in room.entities:
+    for _id in location.entities:
         entity = world.get_entity(_id)
 
         if evaluator.eval(entity.visible_when):
@@ -114,15 +114,15 @@ def look(world: World, inv: Inventory, state: GameState, command: Command) -> Re
         for e in visible:
             output.append(f" - {e.name}")
 
-    if room.exits:
+    if location.exits:
         output.extend(["", "Available exits: "])
 
-        for d in room.exits:
+        for d in location.exits:
             output.append(f" - {d}")
 
     return Result(
         text="\n".join(output),
-        suggestions=[f"Go {d}" for d in room.exits],
+        suggestions=[f"Go {d}" for d in location.exits],
     )
 
 
@@ -131,9 +131,9 @@ def go(world: World, inv: Inventory, state: GameState, command: Command) -> Resu
         return Result(text="Go where?", success=False)
 
     try:
-        room = world.curr_room
-        if room is not None:
-            cond = room.exit_conditions.get(command.target.lower())
+        location = world.current_location
+        if location is not None:
+            cond = location.exit_conditions.get(command.target.lower())
 
         if not Evaluator(state).eval(cond):
             return Result(text="That passage is blocked.", success=False)
@@ -199,9 +199,9 @@ def take(world: World, inv: Inventory, state: GameState, command: Command) -> Re
     if not entity.portable:
         return Result(text=f"You can't take the {entity.name}")
 
-    room = world.curr_room
+    location = world.current_location
 
-    room.remove_entity(entity._id)
+    location.remove_entity(entity._id)
     inv.add(entity._id)
 
     return Result(text=f"You picked up the {entity.name}")
@@ -223,7 +223,7 @@ def drop(world: World, inv: Inventory, state: GameState, command: Command) -> Re
         return Result(text=f"You are not carying {command.target}", success=False)
 
     inv.remove(entity._id)
-    world.curr_room.add_entity(entity._id)
+    world.current_location.add_entity(entity._id)
 
     return Result(
         text=f"You dropped the {entity.name}", metadata={"inventory_changed": True}
@@ -317,7 +317,7 @@ def inventory(
 
     output = ["You are carying: "]
 
-    for _id in inv.items:
+    for _id in inv.entities:
         entity = world.get_entity(_id)
         output.append(f" - {entity.name}")
 

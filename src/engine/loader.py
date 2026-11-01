@@ -4,7 +4,9 @@ from typing import Any
 
 import yaml
 
-from engine import Entity, Room, World
+from engine.entity import Entity
+from engine.location import Location
+from engine.world import World
 
 
 @dataclass
@@ -15,13 +17,7 @@ class Story:
     dialogues: dict[str, Any] = field(default_factory=dict)
 
 
-"""
-The format imma use for the engine is as follows.
-Each game will have a folder where the data is stored.
-It will have a story.yaml with the main story, settings and stuff
-It will have a rooms.yaml with  the rooms and the connections
-And finally an items.yaml with the items and where they r found
-"""
+"""Load a story's metadata, locations, entities, and dialogue from YAML files."""
 
 
 class Loader:
@@ -49,6 +45,10 @@ class Loader:
         index_path = self.path / "dialogue" / "index.yaml"
 
         if not index_path.exists():
+            return {}
+
+        index = self._read_yaml(index_path)
+        if index.get("files") == []:
             return {}
 
         data = self._load_indexed_files("dialogue", "dialogues")
@@ -183,48 +183,49 @@ class Loader:
 
         return {section_name: combined}
 
-    def _load_section(self, folder_name: str, legacy: str, section_name: str) -> dict:
-        # backward compatible is prob not the correct term butttt it is like that with the prev non modular way of holding items
+    def _load_section(self, folder_name: str, fallback: str, section_name: str) -> dict:
         index_path = self.path / folder_name / "index.yaml"
 
         if index_path.exists():
             return self._load_indexed_files(folder_name, section_name)
 
-        return self._read_yaml(self.path / legacy)
+        return self._read_yaml(self.path / fallback)
 
     def load(self) -> Story:
         metadata = self._read_yaml(self.path / "story.yaml")
         config = self._load_config()
 
-        room_data = self._load_section("rooms", "room.yaml", "rooms")
-        item_data = self._load_section("items", "items.yaml", "items")
+        location_data = self._load_section(
+            "locations", "locations.yaml", "locations"
+        )
+        entity_data = self._load_section("entities", "entities.yaml", "entities")
 
         dialogues = self._load_dialogues()
 
         world = World()
 
-        self._load_rooms(room_data, world)
-        self._load_entities(item_data, world)
-        self._connect(room_data, world)
+        self._load_locations(location_data, world)
+        self._load_entities(entity_data, world)
+        self._connect(location_data, world)
 
-        start_room = metadata.get("start_room")
+        start_location = metadata.get("start_location")
 
-        if not isinstance(start_room, str) or not start_room:
-            raise ValueError("story.yaml must have a starting room value")
+        if not isinstance(start_location, str) or not start_location:
+            raise ValueError("story.yaml must have a starting location value")
 
-        world.set_curr(start_room)
+        world.set_current_location(start_location)
 
         return Story(metadata=metadata, world=world, config=config, dialogues=dialogues)
 
-    def _load_rooms(self, room_data: dict, world: World):
-        rooms = room_data.get("rooms")
+    def _load_locations(self, location_data: dict, world: World):
+        locations = location_data.get("locations")
 
-        if not isinstance(rooms, dict) or not rooms:
-            raise ValueError("Room data must contain a non-empty 'rooms' mapping")
+        if not isinstance(locations, dict) or not locations:
+            raise ValueError("Location data must contain a non-empty 'locations' mapping")
 
-        for _id, definition in rooms.items():
+        for _id, definition in locations.items():
             if not isinstance(definition, dict):
-                raise ValueError(f"Invalid definition for room: {_id}")
+                raise ValueError(f"Invalid definition for location: {_id}")
 
             name = definition.get("name")
             desc = definition.get("description", "")
@@ -233,13 +234,13 @@ class Loader:
             # ? Parsing hell like before muhahahahahahahahaha
 
             if not isinstance(name, str) or not name:
-                raise ValueError(f"Room {_id} must have a name")
+                raise ValueError(f"Location {_id} must have a name")
 
             if not isinstance(desc, str):
                 raise ValueError(f"Descriptions must be text, {_id}")
 
-            world.add_room(
-                Room(
+            world.add_location(
+                Location(
                     _id=_id,
                     name=name,
                     desc=desc.strip(),
@@ -247,20 +248,20 @@ class Loader:
                 ),
             )
 
-    def _load_entities(self, item_data: dict, world: World):
-        items = item_data.get("items", {})
+    def _load_entities(self, entity_data: dict, world: World):
+        entities = entity_data.get("entities", {})
 
-        if not isinstance(items, dict):
-            raise ValueError("There has to be an items mapping in item data")
+        if not isinstance(entities, dict):
+            raise ValueError("Entity data must contain an 'entities' mapping")
 
-        for _id, definition in items.items():
+        for _id, definition in entities.items():
             if not isinstance(definition, dict):
                 raise ValueError(f"Invalid entity definition: {_id}")
 
             name = definition.get("name")
             desc = definition.get("description", "")
             aliases = definition.get("aliases", [])
-            t = definition.get("entity_type", "item")
+            entity_type = definition.get("entity_type", "item")
             portable = definition.get("portable", False)
             location = definition.get("location")
             interactions = definition.get("interactions", {})
@@ -277,7 +278,7 @@ class Loader:
             ):
                 raise ValueError(f"Aliases for {_id} must be strings")
 
-            if not isinstance(t, str) or not t:
+            if not isinstance(entity_type, str) or not entity_type:
                 raise ValueError(f"Entity type for {_id} must be text")
 
             if not isinstance(portable, bool):
@@ -296,7 +297,7 @@ class Loader:
                 _id,
                 name=name,
                 desc=desc,
-                _type=t,
+                entity_type=entity_type,
                 aliases=aliases,
                 portable=portable,
                 interactions=interactions,
@@ -306,10 +307,10 @@ class Loader:
             world.add_entity(entity)
             world.place_entity(_id, location)
 
-    def _connect(self, room_data: dict, world: World):
-        rooms = room_data["rooms"]
+    def _connect(self, location_data: dict, world: World):
+        locations = location_data["locations"]
 
-        for _id, definition in rooms.items():
+        for _id, definition in locations.items():
             exits = definition.get("exits", {})
 
             if not isinstance(exits, dict):
@@ -317,11 +318,11 @@ class Loader:
 
             for d, dest in exits.items():
                 if not isinstance(d, str) or not d:
-                    raise ValueError(f"Invalid direction for exit {d} room")
+                    raise ValueError(f"Invalid direction for exit {d} at location {_id}")
 
                 if not isinstance(dest, str):
                     raise ValueError(
-                        f"Invalid destination for exit {d}" f"in room {_id}"
+                        f"Invalid destination for exit {d} at location {_id}"
                     )
 
                 try:

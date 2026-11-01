@@ -17,7 +17,7 @@ title: My Story
 subtitle: An Interactive Fiction Adventure
 author: Author
 version: "1.0"
-start_room: starting_room  
+start_location: starting_area
             """
 
     config = """\
@@ -45,17 +45,17 @@ ui:
         placeholder: "What do you do?"
             """
 
-    room_index = """\
+    location_index = """\
 files:
     - starting_area.yaml
             """
 
-    starting_room = """\
-rooms:
-    starting_room:
-        name: "A Quiet Room"
+    starting_area = """\
+locations:
+    starting_area:
+        name: "Quiet Platform"
         description: >
-            You are standing in a quiet room.
+            You are standing on a quiet platform.
             An exit leads east.
         exits:
             east: hallway
@@ -66,16 +66,16 @@ rooms:
             A narrow hallway stretches before you.
             You can return west.
         exits:
-            west: starting_room
+            west: starting_area
             """
 
-    item_index = """\
+    entity_index = """\
 files:
     - objects.yaml
             """
 
     objects = """\
-items:
+entities:
     old_note:
         name: "Old Note"
         description: "A small note with faded writing"
@@ -83,16 +83,21 @@ items:
             - note
         entity_type: item
         portable: true
-        location: starting_room
+        location: starting_area
+            """
+
+    dialogue_index = """\
+files: []
             """
 
     files = {
         "story.yaml": story,
         "config.yaml": config,
-        "rooms/index.yaml": room_index,
-        "rooms/starting_area.yaml": starting_room,
-        "items/index.yaml": item_index,
-        "items/objects.yaml": objects,
+        "locations/index.yaml": location_index,
+        "locations/starting_area.yaml": starting_area,
+        "entities/index.yaml": entity_index,
+        "entities/objects.yaml": objects,
+        "dialogue/index.yaml": dialogue_index,
     }
 
     path.mkdir(parents=True)
@@ -106,7 +111,7 @@ items:
     print()
     print("Next steps:")
     print(f"\thollow-mile run {path}")
-    print(f"\thollow-mile validae {path}")
+    print(f"\thollow-mile validate {path}")
 
 
 def run_game(path: Path) -> None:
@@ -118,20 +123,20 @@ def run_game(path: Path) -> None:
 
 
 def validate_game(path: Path) -> bool:
-    print(f"Validating projectL {path}")
+    print(f"Validating project: {path}")
     print()
 
     try:
         story = Loader(path).load()
 
-        room_count = len(story.world.rooms)
+        location_count = len(story.world.locations)
         entity_count = len(story.world.entities)
 
         print("[OK] Story files loaded")
-        print("[OK] Starting room exists")
-        print(f"[OK] Loaded {room_count} rooms")
+        print("[OK] Starting location exists")
+        print(f"[OK] Loaded {location_count} locations")
         print(f"[OK] Loaded {entity_count} entities")
-        print("[OK] Room connections and entity placements loaded")
+        print("[OK] Location connections and entity placements loaded")
         print("[OK] Configuration loaded")
 
         print()

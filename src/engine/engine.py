@@ -47,7 +47,8 @@ class Engine:
             return Result(text=f"Could not load the game: {e}", success=False)
 
         return Result(
-            text=f"Game loaded successfully", metadata={"location": self.world.curr}
+            text=f"Game loaded successfully",
+            metadata={"location": self.world.current_location_id},
         )
 
     def execute(self, raw: str) -> Result:
@@ -78,7 +79,7 @@ class Engine:
             self.events.emit(
                 event,
                 {
-                    "location": self.world.curr,
+                    "location": self.world.current_location_id,
                     "metadata": res.metadata,
                 },
             )

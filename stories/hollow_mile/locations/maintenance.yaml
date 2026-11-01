@@ -1,4 +1,4 @@
-rooms:
+locations:
   maintenance_office:
     name: Maintenance Office
     description: >

@@ -4,6 +4,6 @@ subtitle: A Station That Should Not Exist
 author: Meeee
 version: "0.1"
 
-start_room: platform
+start_location: platform
 
 description: Your train has stopped at an unfamiliar station. there is no driver, no other passenger, and no visible exit. The station does not appearn on any modern map.

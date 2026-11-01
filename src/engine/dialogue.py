@@ -15,10 +15,10 @@ class DialogueManager:
         self.curr: str | None = None
 
     def _visible_entities(self):
-        room = self.world.curr_room
+        location = self.world.current_location
         evaluator = Evaluator(self.state)
 
-        for _id in room.entities:
+        for _id in location.entities:
             entity = self.world.get_entity(_id)
 
             if entity and evaluator.eval(entity.visible_when):

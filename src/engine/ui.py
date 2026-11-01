@@ -222,10 +222,10 @@ class UI(App):
         accent = self._theme.get("accent", "#d5a85f")
         info.append("LOCATION\n", style=f"bold {accent}")
 
-        room = self.engine.world.curr_room
+        location = self.engine.world.current_location
 
-        if room:
-            info.append(f"{room.name}\n")
+        if location:
+            info.append(f"{location.name}\n")
         else:
             info.append(f"Unknown\n")
 
@@ -234,7 +234,7 @@ class UI(App):
         if self.engine.inv.is_empty():
             info.append("Empty\n")
         else:
-            for _id in self.engine.inv.items:
+            for _id in self.engine.inv.entities:
                 entity = self.engine.world.get_entity(_id)
                 info.append(f"- {entity.name}\n")
 

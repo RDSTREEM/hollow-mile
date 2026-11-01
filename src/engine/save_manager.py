@@ -4,7 +4,7 @@ from typing import Any
 
 
 class SaveManager:
-    FORMAT_VERSION = 1
+    FORMAT_VERSION = 2
 
     @staticmethod
     def save(engine, path: str | Path) -> None:
@@ -14,10 +14,11 @@ class SaveManager:
         data = {
             "format_version": SaveManager.FORMAT_VERSION,
             "story_id": engine.story.metadata.get("id"),
-            "current_room": engine.world.curr,
-            "inventory": engine.inv.items,
-            "room_entities": {
-                _id: room.entities for _id, room in engine.world.rooms.items()
+            "current_location": engine.world.current_location_id,
+            "inventory_entities": engine.inv.entities,
+            "location_entities": {
+                _id: location.entities
+                for _id, location in engine.world.locations.items()
             },
             "flags": engine.state.flags,
             "variables": engine.state.vars,
@@ -33,23 +34,26 @@ class SaveManager:
 
         data = json.loads(path.read_text(encoding="utf-8"))
 
-        SaveManager._validate(engine, data)
+        current_location, inventory_entities, location_entities = SaveManager._validate(
+            engine, data
+        )
 
-        engine.world.curr = data["current_room"]
+        engine.world.current_location_id = current_location
 
-        for _id, entity in data["room_entities"].items():
-            engine.world.rooms[_id].entities = entity.copy()
+        for _id, entities in location_entities.items():
+            engine.world.locations[_id].entities = entities.copy()
 
-        engine.inv.items = data["inventory"].copy()
+        engine.inv.entities = inventory_entities.copy()
         engine.state.flags = data["flags"].copy()
         engine.state.vars = data["variables"].copy()
 
     @staticmethod
-    def _validate(engine, data: Any) -> None:
+    def _validate(engine, data: Any) -> tuple[str, list[str], dict[str, list[str]]]:
         if not isinstance(data, dict):
             raise ValueError("Invalid save file format.")
 
-        if data.get("format_version") != SaveManager.FORMAT_VERSION:
+        version = data.get("format_version")
+        if version not in {1, SaveManager.FORMAT_VERSION}:
             raise ValueError("Unsupported save file version.")
 
         expected = engine.story.metadata.get("id")
@@ -57,24 +61,27 @@ class SaveManager:
         if data.get("story_id") != expected:
             raise ValueError("This save belongs to a different story")
 
-        _id = data.get("current_room")
+        current_location = data.get("current_location", data.get("current_room"))
 
-        if _id not in engine.world.rooms:
-            raise ValueError("Save file contains an unknown room")
+        if (
+            not isinstance(current_location, str)
+            or current_location not in engine.world.locations
+        ):
+            raise ValueError("Save file contains an unknown location")
 
-        inv = data.get("inventory")
-        room_entities = data.get("room_entities")
+        inventory_entities = data.get("inventory_entities", data.get("inventory"))
+        location_entities = data.get("location_entities", data.get("room_entities"))
         flags = data.get("flags")
         variables = data.get("variables")
 
-        if not isinstance(inv, list):
+        if not isinstance(inventory_entities, list):
             raise ValueError("Invalid inventory in save file")
 
-        if not isinstance(room_entities, dict):
-            raise ValueError("Invalid room data in save file")
+        if not isinstance(location_entities, dict):
+            raise ValueError("Invalid location data in save file")
 
-        if set(room_entities) != set(engine.world.rooms):
-            raise ValueError("Save file has an incompatible room layout")
+        if set(location_entities) != set(engine.world.locations):
+            raise ValueError("Save file has an incompatible location layout")
 
         if not isinstance(flags, dict):
             raise ValueError("Invalid flags in save file")
@@ -92,13 +99,13 @@ class SaveManager:
 
         all_ids = []
 
-        for ids in room_entities.values():
+        for ids in location_entities.values():
             if not isinstance(ids, list):
                 raise ValueError("Invalid entity list in save file")
 
             all_ids.extend(ids)
 
-        all_ids.extend(inv)
+        all_ids.extend(inventory_entities)
 
         if not all(
             isinstance(_id, str) and _id in engine.world.entities for _id in all_ids
@@ -108,6 +115,8 @@ class SaveManager:
         if len(all_ids) != len(set(all_ids)):
             raise ValueError("An entity appears in multiple locations.")
 
-        for _id in inv:
+        for _id in inventory_entities:
             if not engine.world.get_entity(_id).portable:
                 raise ValueError(f"Non portable entity in inventory: {_id}")
+
+        return current_location, inventory_entities, location_entities

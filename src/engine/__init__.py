@@ -1,5 +1,5 @@
 from engine.entity import Entity
-from engine.room import Room
+from engine.location import Location
 from engine.world import World
 from engine.parser import Command, CommandParser
 from engine.result import Result
@@ -13,7 +13,7 @@ from engine.save_manager import SaveManager
 
 __all__ = [
     "Entity",
-    "Room",
+    "Location",
     "World",
     "Command",
     "CommandParser",
