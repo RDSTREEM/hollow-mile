@@ -14,24 +14,6 @@ class DialogueManager:
         self.active: str | None = None
         self.curr: str | None = None
 
-    def handle(self, raw: str) -> Result | None:
-        raw = raw.strip()
-
-        if self.active:
-            return self._choose(raw)
-
-        match = re.fullmatch(r"talk (?:\s|(.+))?", raw, re.IGNORECASE)
-
-        if not match:
-            return None
-
-        target = match.group(1)
-
-        if not target:
-            return self._list_characters()
-
-        return self.start(target)
-
     def _visible_entities(self):
         room = self.world.curr_room
         evaluator = Evaluator(self.state)
@@ -54,7 +36,9 @@ class DialogueManager:
 
         return Result(text=f"You can talk to {', '.join(characters)}")
 
-    def start(self, target: str) -> Result:
+    def start(self, target: str | None) -> Result:
+        if not target:
+            return self._list_characters()
         entity = next(
             (
                 entity
@@ -137,7 +121,7 @@ class DialogueManager:
             metadata={"events": events},
         )
 
-    def _choose(self, raw: str) -> Result:
+    def choose(self, raw: str) -> Result:
         if raw.lower() in {"leave", "bye", "goodbye", "cancel", "exit"}:
             self.end()
             return Result(text="You ended the conversation")

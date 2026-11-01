@@ -346,7 +346,7 @@ def help_action(
     )
 
 
-def create_registry() -> ActionRegistry:
+def create_registry(dialogue=None) -> ActionRegistry:
     reg = ActionRegistry()
 
     reg.register("look", look)
@@ -357,5 +357,15 @@ def create_registry() -> ActionRegistry:
     reg.register("drop", drop)
     reg.register("use", use)
     reg.register("take", take)
+
+    def talk_action(
+        world: World, inv: Inventory, state: GameState, command: Command
+    ) -> Result:
+        if dialogue is None:
+            return Result("Dialogue is unavialable", success=False)
+
+        return dialogue.start(command.target)
+
+    reg.register("talk", talk_action)
 
     return reg

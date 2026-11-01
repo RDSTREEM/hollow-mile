@@ -20,11 +20,12 @@ class Engine:
         self.state = GameState()
 
         self.parser = CommandParser()
-        self.actions = create_registry()
-
-        self.events = Bus()
 
         self.dialogue = DialogueManager(self.world, self.state, self.story.dialogues)
+
+        self.actions = create_registry(self.dialogue)
+
+        self.events = Bus()
 
         self.path = Path("saves/slot1.json")
 
@@ -61,11 +62,10 @@ class Engine:
         if cmd.action == "load":
             return self.load()
 
-        dialogue_res = self.dialogue.handle(raw)
-
-        if dialogue_res is not None:
-            self._emit_events(dialogue_res)
-            return dialogue_res
+        if self.dialogue.active:
+            res = self.dialogue.choose(raw)
+            self._emit_events(res)
+            return res
 
         res = self.actions.execute(self.world, self.inv, self.state, cmd)
 
