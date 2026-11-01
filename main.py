@@ -1,20 +1,15 @@
 from engine.loader import Loader
-from engine import CommandParser, Command, create_registry, Inventory
+from engine import Engine
 from engine.actions import look
 from pathlib import Path
 
 
 def main():
     p = Path(__file__).parent / "stories" / "hollow_mile"
-    loader = Loader(p)
-    story = loader.load()
-    world = story.world
+    story = Loader(p).load()
+    engine = Engine(story)
+
     metadata = story.metadata
-
-    inv = Inventory()
-
-    parser = CommandParser()
-    actions = create_registry()
 
     print("=" * 60)
     print(f"                    {metadata["title"]}")
@@ -24,7 +19,7 @@ def main():
     print("\nType 'help' to see avialalbe commands.")
     print("Type 'quit' to leave the station.\n")
 
-    result = look(world, inv, Command(action="look"))
+    result = engine.start()
 
     print(result.text)
 
@@ -40,18 +35,13 @@ def main():
             print("HOLLOW MILE - SESSION ENDED")
             break
 
-        command = parser.parse(user)
+        result = engine.execute(user)
 
-        if command.action == "empty":
-            continue
+        print(f"\n{result.text}")
 
-        res = actions.execute(world, inv, command)
-
-        print(f"\n{res.text}")
-
-        if res.suggestions:
+        if result.suggestions:
             print("\nSuggested actions:")
-            for sug in res.suggestions:
+            for sug in result.suggestions:
                 print(f" - {sug}")
 
 
