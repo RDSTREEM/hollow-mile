@@ -76,6 +76,7 @@ class Loader:
 
             name = definition.get("name")
             desc = definition.get("description", "")
+            exit_conditions = definition.get("exit_conditions", {})
 
             # ? Parsing hell like before muhahahahahahahahaha
 
@@ -90,6 +91,7 @@ class Loader:
                     _id=_id,
                     name=name,
                     desc=desc.strip(),
+                    exit_conditions=exit_conditions,
                 ),
             )
 
@@ -110,6 +112,7 @@ class Loader:
             portable = definition.get("portable", False)
             location = definition.get("location")
             interactions = definition.get("interactions", {})
+            visible_when = definition.get("visible_when", {})
 
             if not isinstance(name, str) or not name:
                 raise ValueError(f"Name for {_id} must be text")
@@ -134,6 +137,9 @@ class Loader:
             if not isinstance(interactions, dict):
                 raise ValueError(f"Interactions for {_id} must be a mapping")
 
+            if not isinstance(visible_when, dict):
+                raise ValueError(f"Visibility rules for {_id} must be a mapping")
+
             entity = Entity(
                 _id,
                 name=name,
@@ -142,6 +148,7 @@ class Loader:
                 aliases=aliases,
                 portable=portable,
                 interactions=interactions,
+                visible_when=visible_when,
             )
 
             world.add_entity(entity)

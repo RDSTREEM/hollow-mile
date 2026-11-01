@@ -10,6 +10,8 @@ class Room:
     exits: dict[str, str] = field(default_factory=dict)
     entities: list[str] = field(default_factory=list)
 
+    exit_conditions: dict[str, dict] = field(default_factory=dict)
+
     def add_exit(self, d: str, dest: str) -> None:
         self.exits[d.lower()] = dest
 

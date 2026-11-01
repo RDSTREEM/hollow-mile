@@ -43,7 +43,7 @@ class ActionRegistry:
         return handler(world, inv, state, command)
 
 
-def find_entity(world: World, query: str):
+def find_entity(world: World, query: str, state: GameState):
 
     room = world.curr_room
 
@@ -56,6 +56,11 @@ def find_entity(world: World, query: str):
 
     for _id in room.entities:
         entity = world.get_entity(_id)
+
+        evaluator = Evaluator(state)
+
+        if not evaluator.eval(entity.visible_when):
+            continue
 
         names = [entity.name, *entity.aliases]
 
@@ -92,14 +97,22 @@ def look(world: World, inv: Inventory, state: GameState, command: Command) -> Re
 
     output = [room.name, "", room.desc]
 
-    if room.entities:
+    evaluator = Evaluator(state)
+    visible = []
+
+    for _id in room.entities:
+        entity = world.get_entity(_id)
+
+        if evaluator.eval(entity.visible_when):
+            visible.append(entity)
+
+    if visible:
         output.extend(
             ["", "You notice: "]
         )  # todo: should change this to be changable by the metadata yaml
 
-        for _id in room.entities:
-            entity = world.get_entity(_id)
-            output.append(f" - {entity.name}")
+        for e in visible:
+            output.append(f" - {e.name}")
 
     if room.exits:
         output.extend(["", "Available exits: "])
@@ -118,6 +131,13 @@ def go(world: World, inv: Inventory, state: GameState, command: Command) -> Resu
         return Result(text="Go where?", success=False)
 
     try:
+        room = world.curr_room
+        if room is not None:
+            cond = room.exit_conditions.get(command.target.lower())
+
+        if not Evaluator(state).eval(cond):
+            return Result(text="That passage is blocked.", success=False)
+
         dest = world.move(command.target)
     except (ValueError, KeyError) as e:
         return Result(text=str(e), success=False)
@@ -133,7 +153,7 @@ def examine(world: World, inv: Inventory, state: GameState, command: Command) ->
     if not command.target:
         return Result(text="What would you like to examine?", success=False)
 
-    entity, ambigous = find_entity(world, command.target)
+    entity, ambigous = find_entity(world, command.target, state)
 
     if not entity and not ambigous:
         entity, ambigous = find_inv_entity(world, inv, command.target)
@@ -165,7 +185,7 @@ def take(world: World, inv: Inventory, state: GameState, command: Command) -> Re
     if not command.target:
         return Result(text="What would you like to take?", success=False)
 
-    entity, ambigous = find_entity(world, command.target)
+    entity, ambigous = find_entity(world, command.target, state)
 
     if ambigous:
         return Result(
@@ -225,7 +245,7 @@ def use(world: World, inv: Inventory, state: GameState, command: Command) -> Res
     if item is None:
         return Result(text=f"You aren't carrying {command.target}", success=False)
 
-    target, ambigous = find_entity(world, command.secondary_target)
+    target, ambigous = find_entity(world, command.secondary_target, state)
 
     if ambigous:
         return Result(

@@ -16,6 +16,8 @@ class Entity:
 
     interactions: dict[str, Any] = field(default_factory=dict)
 
+    visible_when: dict | None = None
+
     def matches(self, query: str) -> bool:
 
         query = " ".join(query.lower().split())
