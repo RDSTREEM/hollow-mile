@@ -105,8 +105,8 @@ class UI(App):
     BINDINGS = [
         ("ctrl + s", "save_game", "Save"),
         ("ctrl + o", "load_game", "Load"),
-        ("f1", "save_game", "Help"),
-        ("ctrl + q", "save_game", "Quit"),
+        ("f1", "show_help", "Help"),
+        ("ctrl + q", "quit_game", "Quit"),
     ]
 
     def __init__(self, engine: Engine):
@@ -152,6 +152,7 @@ class UI(App):
 
         if cmd.lower() in {"quit", "exit"}:
             self.action_quit_game()
+            return
 
         res = self.engine.execute(cmd)
         self._display_result(res)

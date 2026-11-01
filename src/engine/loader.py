@@ -26,7 +26,7 @@ class Loader:
     def __init__(self, path: str | Path):
         self.path = Path(path)
 
-    def _read_yaml(self, filename: str) -> dict:
+    def _read_yaml(self, filename: str | Path) -> dict:
 
         p = self.path / filename
 
@@ -44,10 +44,59 @@ class Loader:
 
         return data
 
+    def _load_indexed_files(self, folder_name: str, section_name: str) -> dict:
+        folder = self.path / folder_name
+        index_path = folder / "index.yaml"
+
+        index = self._read_yaml(index_path)
+
+        files = index.get("files")
+
+        if not isinstance(files, list) or not files:
+            raise ValueError(f"{index_path} must contain a non-empty files list")
+
+        combined = {}
+
+        for filename in files:
+            if not isinstance(filename, str) or not filename:
+                raise ValueError(f"Every entry in {index_path} must be a filename")
+
+            file_path = (
+                folder / filename
+            ).resolve()  # great recall from yt archiver :)
+
+            if not file_path.is_relative_to(folder.resolve()):
+                raise ValueError(f"Invalid file path in {index_path}: {filename}")
+
+            data = self._read_yaml(file_path)
+
+            section = data.get(section_name)
+
+            if not isinstance(section, dict):
+                raise ValueError(f"{file_path} must contain a {section_name} mapping")
+
+            for _id, definition in section.items():
+                if _id in combined:
+                    raise ValueError("Duplicate")
+
+                combined[_id] = definition
+
+        return {section_name: combined}
+
+    def _load_section(self, folder_name: str, legacy: str, section_name: str) -> dict:
+        # backward compatible is prob not the correct term butttt it is like that with the prev non modular way of holding items
+        index_path = self.path / folder_name / "index.yaml"
+
+        if index_path.exists():
+            return self._load_indexed_files(folder_name, section_name)
+
+        return self._read_yaml(self.path / legacy)
+
     def load(self) -> Story:
         metadata = self._read_yaml("story.yaml")
-        room_data = self._read_yaml("rooms.yaml")
-        item_data = self._read_yaml("items.yaml")
+
+        room_data = self._load_section("rooms", "room.yaml", "rooms")
+        item_data = self._load_section("rooms", "item.yaml", "rooms")
 
         world = World()
 
@@ -68,7 +117,7 @@ class Loader:
         rooms = room_data.get("rooms")
 
         if not isinstance(rooms, dict) or not rooms:
-            raise ValueError("rooms.yaml must contain a non-empty 'rooms' mapping")
+            raise ValueError("Room data must contain a non-empty 'rooms' mapping")
 
         for _id, definition in rooms.items():
             if not isinstance(definition, dict):
@@ -99,7 +148,7 @@ class Loader:
         items = item_data.get("items", {})
 
         if not isinstance(items, dict):
-            raise ValueError("There has to be an items mapping in items.yaml")
+            raise ValueError("There has to be an items mapping in item data")
 
         for _id, definition in items.items():
             if not isinstance(definition, dict):
@@ -112,7 +161,7 @@ class Loader:
             portable = definition.get("portable", False)
             location = definition.get("location")
             interactions = definition.get("interactions", {})
-            visible_when = definition.get("visible_when", None)
+            visible_when = definition.get("visible_when")
 
             if not isinstance(name, str) or not name:
                 raise ValueError(f"Name for {_id} must be text")
