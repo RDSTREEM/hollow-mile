@@ -3,5 +3,4 @@ title: My Story
 subtitle: An Interactive Fiction Adventure
 author: Author
 version: "1.0"
-start_location: starting_area
-            
+start_location: main_platform

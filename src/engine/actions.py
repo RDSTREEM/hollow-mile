@@ -93,9 +93,9 @@ def look(world: World, inv: Inventory, state: GameState, command: Command) -> Re
     location = world.current_location
 
     if location is None:
-        return Result(text="You have no current location.", success=False)
+        return Result(text="\nYou have no current location.", success=False)
 
-    output = [location.name, "", location.desc]
+    output = ["\n", location.name, "", location.desc]
 
     evaluator = Evaluator(state)
     visible = []
@@ -143,7 +143,7 @@ def go(world: World, inv: Inventory, state: GameState, command: Command) -> Resu
         return Result(text=str(e), success=False)
 
     return Result(
-        text=(f"You travel {command.target}.\n\n{dest.name}\n\n{dest.desc}"),
+        text=(f"\nYou travel {command.target}.\n\n{dest.name}\n\n{dest.desc}"),
         suggestions=[f"Go {d}" for d in dest.exits],
         metadata={"location": dest._id},
     )
@@ -151,7 +151,7 @@ def go(world: World, inv: Inventory, state: GameState, command: Command) -> Resu
 
 def examine(world: World, inv: Inventory, state: GameState, command: Command) -> Result:
     if not command.target:
-        return Result(text="What would you like to examine?", success=False)
+        return Result(text="\nWhat would you like to examine?", success=False)
 
     entity, ambigous = find_entity(world, command.target, state)
 
@@ -160,12 +160,12 @@ def examine(world: World, inv: Inventory, state: GameState, command: Command) ->
 
     if ambigous:
         return Result(
-            text="That description matches multiple objects. Be more specific.",
+            text="\nThat description matches multiple objects. Be more specific.",
             success=False,
         )
 
     if entity is None:
-        return Result(text=f"You dont see {command.target} here", success=False)
+        return Result(text=f"\nYou dont see {command.target} here", success=False)
 
     desc = entity.desc
     variants = entity.interactions.get("variants", [])
@@ -178,83 +178,83 @@ def examine(world: World, inv: Inventory, state: GameState, command: Command) ->
             desc = variant.get("text", desc)
             break
 
-    return Result(text=f"{entity.name}\n\n{desc}")
+    return Result(text=f"\n{entity.name}\n\n{desc}")
 
 
 def take(world: World, inv: Inventory, state: GameState, command: Command) -> Result:
     if not command.target:
-        return Result(text="What would you like to take?", success=False)
+        return Result(text="\nWhat would you like to take?", success=False)
 
     entity, ambigous = find_entity(world, command.target, state)
 
     if ambigous:
         return Result(
-            text="That description matches multiple objects. Be more specific.",
+            text="\nThat description matches multiple objects. Be more specific.",
             success=False,
         )
 
     if entity is None:
-        return Result(text=f"You dont see {command.target} here", success=False)
+        return Result(text=f"\nYou dont see {command.target} here", success=False)
 
     if not entity.portable:
-        return Result(text=f"You can't take the {entity.name}")
+        return Result(text=f"\nYou can't take the {entity.name}")
 
     location = world.current_location
 
     location.remove_entity(entity._id)
     inv.add(entity._id)
 
-    return Result(text=f"You picked up the {entity.name}")
+    return Result(text=f"\nYou picked up the {entity.name}")
 
 
 def drop(world: World, inv: Inventory, state: GameState, command: Command) -> Result:
     if not command.target:
-        return Result(text="What would you like to drop?", success=False)
+        return Result(text="\nWhat would you like to drop?", success=False)
 
     entity, ambigous = find_inv_entity(world, inv, command.target)
 
     if ambigous:
         return Result(
-            text="That description matches multiple objects. Be more specific.",
+            text="\nThat description matches multiple objects. Be more specific.",
             success=False,
         )
 
     if entity is None:
-        return Result(text=f"You are not carying {command.target}", success=False)
+        return Result(text=f"\nYou are not carying {command.target}", success=False)
 
     inv.remove(entity._id)
     world.current_location.add_entity(entity._id)
 
     return Result(
-        text=f"You dropped the {entity.name}", metadata={"inventory_changed": True}
+        text=f"\nYou dropped the {entity.name}", metadata={"inventory_changed": True}
     )
 
 
 def use(world: World, inv: Inventory, state: GameState, command: Command) -> Result:
     if not command.target or not command.secondary_target:
-        return Result(text="Usage: use <item> on <targets>", success=False)
+        return Result(text="\nUsage: use <item> on <targets>", success=False)
 
     item, ambigous = find_inv_entity(world, inv, command.target)
 
     if ambigous:
         return Result(
-            text="That description matches multiple objects. Be more specific.",
+            text="\nThat description matches multiple objects. Be more specific.",
             success=False,
         )
 
     if item is None:
-        return Result(text=f"You aren't carrying {command.target}", success=False)
+        return Result(text=f"\nYou aren't carrying {command.target}", success=False)
 
     target, ambigous = find_entity(world, command.secondary_target, state)
 
     if ambigous:
         return Result(
-            text="That description matches multiple objects. Be more specific.",
+            text="\nThat description matches multiple objects. Be more specific.",
             success=False,
         )
 
     if target is None:
-        return Result(text=f"You don't see '{command.secondary_target}' here.")
+        return Result(text=f"\nYou don't see '{command.secondary_target}' here.")
 
     interactions = target.interactions.get("use", {})
 
@@ -262,7 +262,7 @@ def use(world: World, inv: Inventory, state: GameState, command: Command) -> Res
 
     if response is None:
         return Result(
-            text=f"Using the {item.name} on the {target.name} has no effect.",
+            text=f"\nUsing the {item.name} on the {target.name} has no effect.",
             success=False,
         )
 
@@ -270,7 +270,9 @@ def use(world: World, inv: Inventory, state: GameState, command: Command) -> Res
         response = {"text": response}
 
     if not isinstance(response, dict):
-        return Result(text="This interaction has an invalid defintion.", success=False)
+        return Result(
+            text="\nThis interaction has an invalid defintion.", success=False
+        )
 
     res = cast(Response, response)
     evaluator = Evaluator(state)
@@ -278,10 +280,10 @@ def use(world: World, inv: Inventory, state: GameState, command: Command) -> Res
 
     if not evaluator.eval(cond):
         return Result(
-            text=response.get("failure_text", "Nothing happens."), success=False
+            text=response.get("failure_text", "\nNothing happens."), success=False
         )
 
-    text = response.get("text", "Nothing happens.")
+    text = response.get("text", "\nNothing happens.")
 
     for name, val in res.get("set_flags", {}).items():
         state.set_flag(name, val)
@@ -298,7 +300,7 @@ def use(world: World, inv: Inventory, state: GameState, command: Command) -> Res
         emitted = [emitted]
 
     return Result(
-        text=text.strip(),
+        text=f"\n{text.strip()}",
         metadata={
             "interaction": "use",
             "item": item._id,
@@ -313,9 +315,9 @@ def inventory(
     world: World, inv: Inventory, state: GameState, command: Command
 ) -> Result:
     if inv.is_empty():
-        return Result(text="Your inventory is empty.")
+        return Result(text="\nYour inventory is empty.")
 
-    output = ["You are carying: "]
+    output = ["\nYou are carying: "]
 
     for _id in inv.entities:
         entity = world.get_entity(_id)
@@ -329,7 +331,7 @@ def help_action(
 ) -> Result:
     return Result(
         text=(
-            "AVIALABLE COMMANDS\n\n"
+            "\nAVIALABLE COMMANDS\n\n"
             "look                              Describe your surroundings\n"
             "go <direction>                    Move through an exit\n"
             "north/south                       Quick movment\n"
@@ -338,6 +340,7 @@ def help_action(
             "take <object>                     Pick up an object"
             "drop <object>                     Drop an object\n"
             "use <item> on <target>            Use an item on something\n"
+            "talk <character>                  Talk to a character\n"
             "inventory                         Check your inventory\n"
             "save                              Save your progress\n"
             "load                              Load your saved progress\n"

@@ -31,9 +31,9 @@ class DialogueManager:
         ]
 
         if not characters:
-            return Result(text="There is nobody here to talk to")
+            return Result(text="\nThere is nobody here to talk to")
 
-        return Result(text=f"You can talk to {', '.join(characters)}")
+        return Result(text=f"\nYou can talk to {', '.join(characters)}")
 
     def start(self, target: str | None) -> Result:
         if not target:
@@ -48,19 +48,21 @@ class DialogueManager:
         )
 
         if entity is None:
-            return Result(text=f"You cannot see anyone called {target}", success=False)
+            return Result(
+                text=f"\nYou cannot see anyone called {target}", success=False
+            )
 
         dialogue = self.dialogues.get(entity._id)
 
         if not dialogue:
-            return Result(text=f"{entity.name} has nothing to say")
+            return Result(text=f"\n{entity.name} has nothing to say")
 
         self.active = entity._id
         self.curr = dialogue.get("start")
 
         if not self.curr:
             self.end()
-            return Result(text=f"{entity.name} has no starting node.", success=False)
+            return Result(text=f"\n{entity.name} has no starting node.", success=False)
 
         return self._show_node()
 
@@ -127,7 +129,8 @@ class DialogueManager:
 
         if not raw.isdigit():
             return Result(
-                text="Choose a numbered dialogue option, or type 'leave'", success=False
+                text="\nChoose a numbered dialogue option, or type 'leave'",
+                success=False,
             )
 
         node = self._get_current_definition()
@@ -141,7 +144,7 @@ class DialogueManager:
         choice = choices[idx]
         events = self._apply_effects(choice)
 
-        lines = [f"> {choice['text']}"]
+        lines = [f"\n> {choice['text']}\n"]
 
         response = choice.get("response")
         if response:
