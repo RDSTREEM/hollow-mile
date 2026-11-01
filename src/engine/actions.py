@@ -4,8 +4,10 @@ from engine.world import World
 from engine.parser import Command
 from engine.result import Result
 from engine.inventory import Inventory
+from engine.state import GameState
+from engine.conditions import Evaluator
 
-Handler = Callable[[World, Inventory, Command], Result]
+Handler = Callable[[World, Inventory, GameState, Command], Result]
 
 
 class ActionRegistry:
@@ -15,7 +17,9 @@ class ActionRegistry:
     def register(self, name: str, handler: Handler) -> None:
         self.handlers[name] = handler
 
-    def execute(self, world: World, inv: Inventory, command: Command) -> Result:
+    def execute(
+        self, world: World, inv: Inventory, state: GameState, command: Command
+    ) -> Result:
         handler = self.handlers.get(command.action)
 
         if handler is None:
@@ -24,7 +28,7 @@ class ActionRegistry:
                 success=False,
             )
 
-        return handler(world, inv, command)
+        return handler(world, inv, state, command)
 
 
 def find_entity(world: World, query: str):
@@ -68,7 +72,7 @@ def find_inv_entity(world: World, inv: Inventory, query: str):
     return None, len(matches) > 1
 
 
-def look(world: World, inv: Inventory, command: Command) -> Result:
+def look(world: World, inv: Inventory, state: GameState, command: Command) -> Result:
     room = world.curr_room
 
     if room is None:
@@ -97,7 +101,7 @@ def look(world: World, inv: Inventory, command: Command) -> Result:
     )
 
 
-def go(world: World, inv: Inventory, command: Command) -> Result:
+def go(world: World, inv: Inventory, state: GameState, command: Command) -> Result:
     if not command.target:
         return Result(text="Go where?", success=False)
 
@@ -113,11 +117,14 @@ def go(world: World, inv: Inventory, command: Command) -> Result:
     )
 
 
-def examine(world: World, inv: Inventory, command: Command) -> Result:
+def examine(world: World, inv: Inventory, state: GameState, command: Command) -> Result:
     if not command.target:
         return Result(text="What would you like to examine?", success=False)
 
     entity, ambigous = find_entity(world, command.target)
+
+    if not entity and not ambigous:
+        entity, ambigous = find_inv_entity(world, inv, command.target)
 
     if ambigous:
         return Result(
@@ -128,10 +135,21 @@ def examine(world: World, inv: Inventory, command: Command) -> Result:
     if entity is None:
         return Result(text=f"You dont see {command.target} here", success=False)
 
-    return Result(text=f"{entity.name}\n\n{entity.desc}")
+    desc = entity.desc
+    variants = entity.interactions.get("descriptions", {})
+    evaluator = Evaluator(state)
+
+    for variant in variants:
+        condition = variant.get("condition")
+
+        if evaluator.eval(condition):
+            desc = variant.get("text", desc)
+            break
+
+    return Result(text=f"{entity.name}\n\n{desc}")
 
 
-def take(world: World, inv: Inventory, command: Command) -> Result:
+def take(world: World, inv: Inventory, state: GameState, command: Command) -> Result:
     if not command.target:
         return Result(text="What would you like to take?", success=False)
 
@@ -157,7 +175,7 @@ def take(world: World, inv: Inventory, command: Command) -> Result:
     return Result(text=f"You picked up the {entity.name}")
 
 
-def drop(world: World, inv: Inventory, command: Command) -> Result:
+def drop(world: World, inv: Inventory, state: GameState, command: Command) -> Result:
     if not command.target:
         return Result(text="What would you like to drop?", success=False)
 
@@ -180,7 +198,7 @@ def drop(world: World, inv: Inventory, command: Command) -> Result:
     )
 
 
-def use(world: World, inv: Inventory, command: Command) -> Result:
+def use(world: World, inv: Inventory, state: GameState, command: Command) -> Result:
     if not command.target or not command.secondary_target:
         return Result(text="Usage: use <item> on <targets>", success=False)
 
@@ -217,11 +235,22 @@ def use(world: World, inv: Inventory, command: Command) -> Result:
         )
 
     if isinstance(response, str):
-        text = response
-    elif isinstance(response, dict):
-        text = response.get("text", "Nothing happens.")
-    else:
+        response = {"text": response}
+    if not isinstance(response, dict):
         return Result(text="This interaction has an invalid defintion.", success=False)
+
+    evaluator = Evaluator(state)
+    cond = response.get("condition")
+
+    if not evaluator.eval(cond):
+        return Result(
+            text=response.get("failure_text", "Nothing happens."), success=False
+        )
+
+    text = response.get("text", "Nothing happens.")
+
+    for name, val in response.get("set_flags", {}).items():
+        state.set_flag(name, val)
 
     return Result(
         text=text.strip(),
@@ -229,7 +258,9 @@ def use(world: World, inv: Inventory, command: Command) -> Result:
     )
 
 
-def inventory(world: World, inv: Inventory, command: Command) -> Result:
+def inventory(
+    world: World, inv: Inventory, state: GameState, command: Command
+) -> Result:
     if inv.is_empty():
         return Result(text="Your inventory is empty.")
 
@@ -242,7 +273,9 @@ def inventory(world: World, inv: Inventory, command: Command) -> Result:
     return Result(text="\n".join(output))
 
 
-def help_action(world: World, inv: Inventory, command: Command) -> Result:
+def help_action(
+    world: World, inv: Inventory, state: GameState, command: Command
+) -> Result:
     return Result(
         text=(
             "AVIALABLE COMMANDS\n\n"
