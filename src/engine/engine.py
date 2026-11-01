@@ -8,6 +8,7 @@ from engine.actions import create_registry, look
 from engine.result import Result
 from engine.events import Bus
 from engine.save_manager import SaveManager
+from engine.dialogue import DialogueManager
 
 
 class Engine:
@@ -22,6 +23,8 @@ class Engine:
         self.actions = create_registry()
 
         self.events = Bus()
+
+        self.dialogue = DialogueManager(self.world, self.state, self.story.dialogues)
 
         self.path = Path("saves/slot1.json")
 
@@ -58,11 +61,24 @@ class Engine:
         if cmd.action == "load":
             return self.load()
 
+        dialogue_res = self.dialogue.handle(raw)
+
+        if dialogue_res is not None:
+            self._emit_events(dialogue_res)
+            return dialogue_res
+
         res = self.actions.execute(self.world, self.inv, self.state, cmd)
 
-        for event in res.metadata.get("events", []):
-            self.events.emit(
-                event, {"location": self.world.curr, "metadata": res.metadata}
-            )
+        self._emit_events(res)
 
         return res
+
+    def _emit_events(self, res: Result):
+        for event in res.metadata.get("events", []):
+            self.events.emit(
+                event,
+                {
+                    "location": self.world.curr,
+                    "metadata": res.metadata,
+                },
+            )

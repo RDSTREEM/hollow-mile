@@ -1,4 +1,4 @@
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
@@ -12,6 +12,7 @@ class Story:
     metadata: dict[str, Any]
     world: World
     config: dict[str, Any]
+    dialogues: dict[str, Any] = field(default_factory=dict)
 
 
 """
@@ -43,6 +44,54 @@ class Loader:
             raise ValueError(f"{path} must contain a YAML mapping")
 
         return data
+
+    def _load_dialogues(self) -> dict:
+        index_path = self.path / "dialogue" / "index.yaml"
+
+        if not index_path.exists():
+            return {}
+
+        data = self._load_indexed_files("dialogue", "dialogues")
+        dialogues = data.get("dialogues", {})
+
+        for _id, definition in dialogues.items():
+            if not isinstance(definition, dict):
+                raise ValueError("Invalid dialogue")
+
+            start = definition.get("start")
+            nodes = definition.get("nodes")
+
+            if not isinstance(start, str) or not start:
+                raise ValueError("Dialogue must have a start")
+
+            if not isinstance(nodes, dict) or start not in nodes:
+                raise ValueError("Dialogue must have a valid start and valid nodes")
+
+            for node_id, node in nodes.items():
+                if not isinstance(node, dict):
+                    raise ValueError("Invalid node")
+
+                if not isinstance(node.get("text", ""), str):
+                    raise ValueError("Node must have text")
+
+                choices = node.get("choices", [])
+
+                if not isinstance(choices, list):
+                    raise ValueError("Choices must be a list")
+
+                for c in choices:
+                    if not isinstance(c, dict):
+                        raise ValueError("Invalid choice in node")
+
+                    if not isinstance(c.get("text"), str):
+                        raise ValueError("Every choice must be text")
+
+                    next_node = c.get("next")
+
+                    if next_node is not None and next_node not in nodes:
+                        raise ValueError("Unknown next node")
+
+        return dialogues
 
     def _load_config(self) -> dict:
         config = self.path / "config.yaml"
@@ -150,6 +199,8 @@ class Loader:
         room_data = self._load_section("rooms", "room.yaml", "rooms")
         item_data = self._load_section("items", "items.yaml", "items")
 
+        dialogues = self._load_dialogues()
+
         world = World()
 
         self._load_rooms(room_data, world)
@@ -163,7 +214,7 @@ class Loader:
 
         world.set_curr(start_room)
 
-        return Story(metadata=metadata, world=world, config=config)
+        return Story(metadata=metadata, world=world, config=config, dialogues=dialogues)
 
     def _load_rooms(self, room_data: dict, world: World):
         rooms = room_data.get("rooms")
